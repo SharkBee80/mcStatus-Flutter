@@ -34,8 +34,8 @@ class _VerticalIconButtonState extends State<VerticalIconButton> {
     return TextButton(
       onPressed: widget.isActive
           ? () {
-        widget.onPressed();
-      }
+              widget.onPressed();
+            }
           : null,
       style: TextButton.styleFrom(
         padding: EdgeInsets.zero,
@@ -45,7 +45,7 @@ class _VerticalIconButtonState extends State<VerticalIconButton> {
         // ),
       ),
       child: SizedBox(
-        width: MediaQuery.widthOf(context) / 5 * 0.75,
+        width: MediaQuery.widthOf(context) / 5,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -58,6 +58,7 @@ class _VerticalIconButtonState extends State<VerticalIconButton> {
     );
   }
 }
+
 //
 // class WhiteSpace extends StatelessWidget {
 //   const WhiteSpace({super.key});

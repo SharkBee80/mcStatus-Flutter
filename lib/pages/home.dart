@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mcstatus/ui/verticalIconButton.dart';
+import 'package:mcstatus/ui/bottomnavigationbar.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -19,7 +19,7 @@ class _MyHomePageState extends State<MyHomePage>
     });
   }
 
-  void onTap(int index) {
+  void _onTap(int index) {
     setState(() {
       _selectedIndex = index;
     });
@@ -27,6 +27,7 @@ class _MyHomePageState extends State<MyHomePage>
 
   @override
   Widget build(BuildContext context) {
+    Color bottomNavigationBarColor = Colors.grey.shade200;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -44,9 +45,15 @@ class _MyHomePageState extends State<MyHomePage>
           ],
         ),
       ),
-      floatingActionButton: SizedBox(
+      floatingActionButton: Container(
         width: 80,
         height: 80,
+        padding: EdgeInsets.all(8),
+        margin: EdgeInsets.fromLTRB(0, 16, 0, 0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(90),
+          color: bottomNavigationBarColor,
+        ),
         child: FloatingActionButton(
           onPressed: _incrementCounter,
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -58,48 +65,10 @@ class _MyHomePageState extends State<MyHomePage>
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBar(
-        shape: CircularNotchedRectangle(),
-        padding: EdgeInsets.zero,
-        child: SizedBox(
-          // height: kBottomNavigationBarHeight,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-              VerticalIconButton(
-                icon: Icons.home,
-                label: 'Home',
-                isSelected: _selectedIndex == 0,
-                onPressed: () => onTap(0),
-              ),
-              VerticalIconButton(
-                icon: Icons.request_page,
-                label: 'Info',
-                isSelected: _selectedIndex == 1,
-                onPressed: () => onTap(1),
-              ),
-              VerticalIconButton(
-                icon: Icons.person,
-                label: 'Add',
-                isSelected: _selectedIndex == 2,
-                isActive: false,
-                onPressed: () => onTap(2),
-              ),
-              VerticalIconButton(
-                icon: Icons.more_horiz,
-                label: 'More',
-                isSelected: _selectedIndex == 3,
-                onPressed: () => onTap(3),
-              ),
-              VerticalIconButton(
-                icon: Icons.settings,
-                label: 'Settings',
-                isSelected: _selectedIndex == 4,
-                onPressed: () => onTap(4),
-              ),
-            ],
-          ),
-        ),
+      bottomNavigationBar: XBottomNavigationBar(
+        onTap: _onTap,
+        selectedIndex: _selectedIndex,
+        color: bottomNavigationBarColor,
       ),
     );
   }
