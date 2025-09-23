@@ -1,0 +1,1 @@
+final Object authKey = 6666;
