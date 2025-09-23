@@ -1,24 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-List<Widget> PageList = [
-  Text('Home'),
-  Text('Info'),
-  Text('Add'),
-  Text('More'),
-  Text('Settings'),
-];
-
-PageController pageController = PageController();
+import '../provider/main.dart';
 
 class MyPageView extends StatefulWidget {
   final int selectedIndex;
-  final Function onPageChanged;
 
-  const MyPageView({
-    super.key,
-    required this.selectedIndex,
-    required this.onPageChanged,
-  });
+  const MyPageView({super.key, required this.selectedIndex});
 
   @override
   State<MyPageView> createState() => _MuPageViewState();
@@ -29,14 +17,15 @@ class _MuPageViewState extends State<MyPageView> {
 
   @override
   Widget build(BuildContext context) {
+    final pageController = context.watch<PageViewProvider>().pageController;
+
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
         if (notification is ScrollEndNotification) {
           // 滑动完全结束
           final page = pageController.page?.round() ?? 0;
           if (page != _currentPage) {
-            setState(() => _currentPage = page);
-            print("真正停在第 ${page + 1} 页");
+            _currentPage = page;
           }
         }
         return false;
@@ -45,22 +34,25 @@ class _MuPageViewState extends State<MyPageView> {
         controller: pageController,
         physics: PageScrollPhysics(),
         onPageChanged: (index) {
-          widget.onPageChanged(index);
+          context.read<PageViewProvider>().setSelectedIndex(index);
+          pageController.animateToPage(
+            index,
+            duration: Duration(milliseconds: 200),
+            curve: Curves.easeInOut,
+          );
         },
         scrollDirection: Axis.horizontal,
         allowImplicitScrolling: true,
         children: [
-          Container(
-          child: Column(
+          Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               const Text('You have pushed the button this many times:'),
-              // Text(
-              //   '$_counter',
-              //   style: Theme.of(context).textTheme.headlineMedium,
-              // ),
+              Text(
+                context.watch<Counter>().counter.toString(),
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
             ],
-          ),
           ),
           Container(
             color: Colors.green,

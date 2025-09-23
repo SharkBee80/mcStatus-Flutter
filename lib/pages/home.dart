@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mcstatus/ui/bottomnavigationbar.dart';
 import 'package:mcstatus/ui/pageview.dart';
+import 'package:provider/provider.dart';
+
+import 'package:mcstatus/provider/main.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -9,31 +12,7 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage>
-    with SingleTickerProviderStateMixin {
-  int _counter = 0;
-  int _selectedIndex = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  void _onTap(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-    pageController.animateToPage(index, duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
-  }
-
-  void _onPageChanged(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-    pageController.animateToPage(index, duration: Duration(milliseconds: 100), curve: Curves.easeInOut);
-  }
-
+class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     Color bottomNavigationBarColor = Colors.grey.shade200;
@@ -54,7 +33,9 @@ class _MyHomePageState extends State<MyHomePage>
       //     ],
       //   ),
       // ),
-      body: MyPageView(selectedIndex: _selectedIndex, onPageChanged: _onPageChanged),
+      body: MyPageView(
+        selectedIndex: context.watch<PageViewProvider>().selectedIndex,
+      ),
 
       floatingActionButton: Container(
         width: 80,
@@ -66,7 +47,10 @@ class _MyHomePageState extends State<MyHomePage>
           color: bottomNavigationBarColor,
         ),
         child: FloatingActionButton(
-          onPressed: _incrementCounter,
+          // onPressed: () => Provider.of<Counter>(context, listen: false).increment(),
+          onPressed: () {
+            context.read<Counter>().increment();
+          },
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           // tooltip: 'Increment',
           shape: RoundedRectangleBorder(
@@ -77,8 +61,6 @@ class _MyHomePageState extends State<MyHomePage>
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: XBottomNavigationBar(
-        onTap: _onTap,
-        selectedIndex: _selectedIndex,
         color: bottomNavigationBarColor,
       ),
     );

@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:mcstatus/ui/verticalIconButton.dart';
+import 'package:mcstatus/ui/verticalIconbutton.dart';
+import 'package:provider/provider.dart';
+
+import '../provider/main.dart';
 
 class XBottomNavigationBar extends StatelessWidget {
-  final Function onTap;
-  final int selectedIndex;
   final Color? color;
 
-  const XBottomNavigationBar({
-    super.key,
-    required this.onTap,
-    required this.selectedIndex,
-    this.color,
-  });
+  const XBottomNavigationBar({super.key, this.color});
 
   @override
   Widget build(BuildContext context) {
+    final selectedIndex = context.watch<PageViewProvider>().selectedIndex;
     return BottomAppBar(
       // shape: CircularNotchedRectangle(),
       padding: EdgeInsets.zero,
@@ -30,13 +27,13 @@ class XBottomNavigationBar extends StatelessWidget {
               icon: Icons.home,
               label: 'Home',
               isSelected: selectedIndex == 0,
-              onPressed: () => onTap(0),
+              onPressed: () => onTap(context, 0),
             ),
             VerticalIconButton(
               icon: Icons.request_page,
               label: 'Info',
               isSelected: selectedIndex == 1,
-              onPressed: () => onTap(1),
+              onPressed: () => onTap(context, 1),
             ),
             VerticalIconButton(
               icon: Icons.person,
@@ -49,17 +46,29 @@ class XBottomNavigationBar extends StatelessWidget {
               icon: Icons.more_horiz,
               label: 'More',
               isSelected: selectedIndex == 2,
-              onPressed: () => onTap(2),
+              onPressed: () => onTap(context, 2),
             ),
             VerticalIconButton(
               icon: Icons.settings,
               label: 'Settings',
               isSelected: selectedIndex == 3,
-              onPressed: () => onTap(3),
+              onPressed: () => onTap(context, 3),
             ),
           ],
         ),
       ),
     );
+  }
+
+  void onTap(BuildContext context, int index) {
+    if (index != context.read<PageViewProvider>().selectedIndex) {
+      context.read<PageViewProvider>().setSelectedIndex(index);
+      // context.read<PageViewProvider>().pageController.animateToPage(
+      //   index,
+      //   duration: Duration(milliseconds: 200),
+      //   curve: Curves.easeInOut,
+      // );
+      context.read<PageViewProvider>().pageController.jumpToPage(index);
+    }
   }
 }

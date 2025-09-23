@@ -1,10 +1,16 @@
+// flutter
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:mcstatus/provider/main.dart';
 
+// provider
+import 'package:provider/provider.dart';
+
+// mcstatus
 import 'package:mcstatus/pages/gate.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -13,14 +19,20 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => Counter()),
+        ChangeNotifierProvider(create: (context) => PageViewProvider()),
+      ],
+      child: MaterialApp(
+        title: 'Flutter',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        ),
+        home: const GatePage(),
+        scrollBehavior: MyCustomScrollBehavior(),
       ),
-      home: const GatePage(),
-      scrollBehavior: MyCustomScrollBehavior(),
     );
   }
 }
@@ -34,4 +46,3 @@ class MyCustomScrollBehavior extends MaterialScrollBehavior {
     PointerDeviceKind.unknown,
   };
 }
-
