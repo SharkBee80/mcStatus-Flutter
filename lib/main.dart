@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
+
 import 'package:mcstatus/pages/gate.dart';
 
 void main() {
@@ -18,7 +20,18 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
       home: const GatePage(),
+      scrollBehavior: MyCustomScrollBehavior(),
     );
   }
+}
+
+class MyCustomScrollBehavior extends MaterialScrollBehavior {
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+    PointerDeviceKind.touch,
+    PointerDeviceKind.mouse, // ✅ 允许鼠标拖拽
+    PointerDeviceKind.stylus,
+    PointerDeviceKind.unknown,
+  };
 }
 

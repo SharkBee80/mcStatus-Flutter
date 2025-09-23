@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mcstatus/ui/bottomnavigationbar.dart';
+import 'package:mcstatus/ui/pageview.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -23,6 +24,14 @@ class _MyHomePageState extends State<MyHomePage>
     setState(() {
       _selectedIndex = index;
     });
+    pageController.animateToPage(index, duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
+  }
+
+  void _onPageChanged(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+    pageController.animateToPage(index, duration: Duration(milliseconds: 100), curve: Curves.easeInOut);
   }
 
   @override
@@ -33,18 +42,20 @@ class _MyHomePageState extends State<MyHomePage>
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text("Minecraft Servers Status"),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
+      // body: Center(
+      //   child: Column(
+      //     mainAxisAlignment: MainAxisAlignment.start,
+      //     children: <Widget>[
+      //       const Text('You have pushed the button this many times:'),
+      //       Text(
+      //         '$_counter',
+      //         style: Theme.of(context).textTheme.headlineMedium,
+      //       ),
+      //     ],
+      //   ),
+      // ),
+      body: MyPageView(selectedIndex: _selectedIndex, onPageChanged: _onPageChanged),
+
       floatingActionButton: Container(
         width: 80,
         height: 80,
