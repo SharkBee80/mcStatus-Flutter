@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:mcstatus/pages/home.dart';
+import 'package:mcstatus/pages/hub.dart';
 import 'package:mcstatus/utils/activator.dart';
 import 'package:mcstatus/pages/activation.dart';
 
@@ -59,7 +59,7 @@ class _GatePageState extends State<GatePage> {
           // builder: (context) => isDesktop
           //   ? const DesktopPage()
           //   : const MobilePage(),
-          builder: (context) => const MyHomePage(),
+          builder: (context) => const MyHubPage(),
         ),
       );
     });

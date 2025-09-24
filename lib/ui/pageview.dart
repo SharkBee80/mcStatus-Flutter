@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../provider/main.dart';
+import 'package:mcstatus/pages/home.dart';
+import 'package:mcstatus/provider/main.dart';
 
 class MyPageView extends StatefulWidget {
   final int selectedIndex;
@@ -44,6 +45,11 @@ class _MuPageViewState extends State<MyPageView> {
         scrollDirection: Axis.horizontal,
         allowImplicitScrolling: true,
         children: [
+          HomePage(),
+          Container(
+            color: Colors.blue,
+            child: Center(child: Text("Page 2")),
+          ),
           Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
@@ -53,14 +59,6 @@ class _MuPageViewState extends State<MyPageView> {
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
             ],
-          ),
-          Container(
-            color: Colors.green,
-            child: Center(child: Text("Page 2")),
-          ),
-          Container(
-            color: Colors.blue,
-            child: Center(child: Text("Page 3")),
           ),
           Container(
             color: Colors.yellow,
