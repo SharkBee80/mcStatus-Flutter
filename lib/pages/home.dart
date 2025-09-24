@@ -12,18 +12,25 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      // height: MediaQuery.of(context).size.height,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            XCard(),
-            SizedBox(height: 50),
-            XCard()
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        const minWidth = 320.0; // 规定最小宽度
+        int crossAxisCount = (constraints.maxWidth / minWidth).floor();
+        if (crossAxisCount < 1) crossAxisCount = 1;
+
+        return GridView.count(
+          padding: const EdgeInsets.all(4),
+          crossAxisCount: crossAxisCount,
+          mainAxisSpacing: 2,
+          crossAxisSpacing: 2,
+          childAspectRatio: 8 / 3,
+          children: <Widget>[
+            XCard(title: "Hypix"),
+            XCard(title: "Hypixel Network",description: 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaajdjhuffifliusidhfkSNsbduefeifhauslaskdlwwofjabiwdjfhjfhjfhjfhjfhjfhjfhjfhjfhjfhjfhjfhjfhjfhjfhjfhjfhjfhjfhjfhjfhjfhjfhjfhjfhjfhjfhjfhjfhjfhjfhj',),
+            XCard(title: "Hypixel Netsdfegsasdwork",players: "000000 / 0000",),
           ],
-        ),
+        );
+      },
     );
   }
 }
