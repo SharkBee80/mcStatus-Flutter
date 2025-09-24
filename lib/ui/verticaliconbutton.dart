@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class VerticalIconButton extends StatefulWidget {
+  class VerticalIconButton extends StatefulWidget {
   final IconData icon;
   final String label;
   final bool isSelected;

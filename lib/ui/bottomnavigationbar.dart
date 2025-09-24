@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mcstatus/ui/verticalIconbutton.dart';
+import 'package:mcstatus/ui/verticaliconbutton.dart';
 import 'package:provider/provider.dart';
 
 import '../provider/main.dart';

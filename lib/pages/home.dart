@@ -1,5 +1,6 @@
 // flutter
 import 'package:flutter/material.dart';
+import 'package:mcstatus/ui/card.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -18,16 +19,9 @@ class _HomePageState extends State<HomePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Card(
-              color: Colors.red,
-              child: SizedBox(
-                height: MediaQuery.widthOf(context) * 9 / 16 / 2,
-                width: MediaQuery.widthOf(context) / 2,
-                child: Row(children: [Column(), Column(), Column()]),
-              ),
-            ),
-            SizedBox(height: 1000),
-            ListTile(title: Text("About"), leading: Icon(Icons.info)),
+            XCard(),
+            SizedBox(height: 50),
+            XCard()
           ],
         ),
     );
