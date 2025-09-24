@@ -94,7 +94,7 @@ class _XCardState extends State<XCard> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        AutoSizeText(
           widget.title,
           style: const TextStyle(
             color: Colors.white,
@@ -106,16 +106,17 @@ class _XCardState extends State<XCard> {
           overflow: TextOverflow.ellipsis,
         ),
         const SizedBox(height: 4),
-        Text(
+        AutoSizeText(
           widget.address,
           style: const TextStyle(color: Colors.grey, fontSize: 14),
           maxLines: 1,
         ),
         const SizedBox(height: 4),
-        Text(
+        AutoSizeText(
           widget.description,
           style: const TextStyle(color: Colors.white, fontSize: 14),
           maxLines: 2,
+          wrapWords: false,
           overflow: TextOverflow.ellipsis,
         ),
       ],
@@ -139,7 +140,7 @@ class _XCardState extends State<XCard> {
               height: 21,
             ),
             const SizedBox(height: 6),
-            Text(
+            AutoSizeText(
               widget.players,
               style: TextStyle(
                 color: Colors.yellowAccent[200],
