@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 
 import 'package:mcstatus/provider/main.dart';
 
+import 'package:mcstatus/ui/showgeneraldialog.dart';
+
 class MyHubPage extends StatefulWidget {
   const MyHubPage({super.key});
 
@@ -50,6 +52,7 @@ class _MyHubPageState extends State<MyHubPage> {
           // onPressed: () => Provider.of<Counter>(context, listen: false).increment(),
           onPressed: () {
             context.read<Counter>().increment();
+            showCentralDialog(context);
           },
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           // tooltip: 'Increment',
