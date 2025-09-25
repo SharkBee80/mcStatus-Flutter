@@ -67,27 +67,32 @@ class Server {
     }
   }
 
-  Future<Servers?> ping(String address) async {
-    // try {
-    //   final serverInfo = await ping(address);
-    //   final description = serverInfo.description;
-    //
-    // }
-    // on PingException catch (e) {}
-    // catch (e) {
-    //   // 处理保存过程中可能发生的异常
-    //   rethrow;
-    // }
+  Future<dynamic> pingServer(String address) async {
+    try {
+      final fullAddress = _getFullAddress(address);
+      final split = fullAddress.split(':');
+      final host = split[0];
+      final port = int.parse(split[1]);
+      
+      final response = await ping(host, port: port);
+      return response;
+    } catch (e) {
+      print('Error pinging $address: $e');
+      return null;
+    }
   }
 
-  Future Info(String address) async {
+  Future<dynamic> getServerInfo(String address) async {
     try {
-    }
-    on PingException catch (e) {
-      return e;
-    }
-    catch (e) {
-      // 处理保存过程中可能发生的异常
+      final fullAddress = _getFullAddress(address);
+      final split = fullAddress.split(':');
+      final host = split[0];
+      final port = int.parse(split[1]);
+      
+      final response = await ping(host, port: port);
+      return response;
+    } catch (e) {
+      print('Error getting server info for $address: $e');
       rethrow;
     }
   }
