@@ -1,5 +1,8 @@
+import 'dart:ffi';
 import 'dart:ui';
 import 'package:flutter/material.dart';
+
+import 'package:mcstatus/core/server.dart';
 
 /// Shows a blurred dialog with optional custom background and blur settings.
 Future<T?> showBlurredDialog<T>({
@@ -90,12 +93,13 @@ void showCentralDialog(BuildContext context) {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    onPressed: () {
+                    onPressed: () async {
                       final name = nameController.text;
                       final address = addressController.text;
                       if (!check(context, name, address)) {
                         return;
                       }
+                      await Server().save(name, address);
                       Navigator.pop(context); // 关闭弹窗
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text("提交成功: $name / $address")),

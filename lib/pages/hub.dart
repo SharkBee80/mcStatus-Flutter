@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 
 import 'package:mcstatus/provider/main.dart';
 
-import 'package:mcstatus/ui/showgeneraldialog.dart';
+import 'package:mcstatus/ui/showcentraldialog.dart';
 
 class MyHubPage extends StatefulWidget {
   const MyHubPage({super.key});

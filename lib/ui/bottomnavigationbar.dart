@@ -36,7 +36,7 @@ class XBottomNavigationBar extends StatelessWidget {
               onPressed: () => onTap(context, 1),
             ),
             VerticalIconButton(
-              icon: Icons.person,
+              icon: Icons.add,
               label: 'Add',
               isSelected: false,
               isActive: false,

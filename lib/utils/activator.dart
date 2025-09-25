@@ -21,8 +21,8 @@ class Activator {
   /// 保存激活码到本地文件
   static Future<void> saveActivationKey(String activationKey) async {
     try {
-      final directory = await FileUtils.getStandardConfigPath();
-      final File file = File('${directory.path}/$_activationFileName');
+      String directory = await FileUtils.getStringPath(_activationFileName);
+      final File file = File(directory);
       DebugX.console('debug ${file.path}');
       await file.writeAsString(activationKey);
     } catch (e) {
@@ -34,8 +34,8 @@ class Activator {
   /// 从本地文件读取激活码
   static Future<String?> getActivationKey() async {
     try {
-      final directory = await FileUtils.getStandardConfigPath();
-      final File file = File('${directory.path}/$_activationFileName');
+      String directory = await FileUtils.getStringPath(_activationFileName);
+      final File file = File(directory);
       DebugX.console('debug ${file.path}');
       if (await file.exists()) {
         return await file.readAsString();

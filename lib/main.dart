@@ -8,8 +8,16 @@ import 'package:provider/provider.dart';
 
 // mcstatus
 import 'package:mcstatus/pages/gate.dart';
+import 'package:mcstatus/utils/files_utils.dart';
 
-void main() {
+// hive
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:mcstatus/models/servers.dart';
+
+void main() async {
+  await Hive.initFlutter(await FileUtils.getStringPath("hive"));
+  Hive.registerAdapter(ServersAdapter());
+  await Hive.openBox<Servers>('servers');
   runApp(MyApp());
 }
 
