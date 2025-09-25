@@ -2,6 +2,9 @@ import 'package:uuid/uuid.dart';
 import 'package:mcstatus/hive/servers.dart';
 import 'package:mcstatus/models/servers.dart';
 
+/// mcstatus库
+import 'package:dart_minecraft/dart_minecraft.dart';
+
 var uuid = Uuid();
 var serversController = ServersController();
 
@@ -25,10 +28,17 @@ class Server {
     }
   }
 
-  Future<void> update(Servers server) async {
+  Future<bool> update(String name, String address, String uuid) async {
     try {
+      Servers? server = serversController.getServer(uuid);
+      if (server == null) {
+        return false;
+      }
+      server.name = name;
+      server.address = address;
       server.edittime = DateTime.now().toString();
       await serversController.updateServer(server);
+      return true;
     } catch (e) {
       // 处理保存过程中可能发生的异常
       rethrow;
@@ -57,12 +67,37 @@ class Server {
     }
   }
 
-  String _getFullAddress(String address) {
-    final split = address.split(':');
-    if (split.length == 2) {
-      return address;
-    } else {
-      return "$address:25565";
+  Future<Servers?> ping(String address) async {
+    // try {
+    //   final serverInfo = await ping(address);
+    //   final description = serverInfo.description;
+    //
+    // }
+    // on PingException catch (e) {}
+    // catch (e) {
+    //   // 处理保存过程中可能发生的异常
+    //   rethrow;
+    // }
+  }
+
+  Future Info(String address) async {
+    try {
     }
+    on PingException catch (e) {
+      return e;
+    }
+    catch (e) {
+      // 处理保存过程中可能发生的异常
+      rethrow;
+    }
+  }
+}
+
+String _getFullAddress(String address) {
+  final split = address.split(':');
+  if (split.length == 2) {
+    return address;
+  } else {
+    return "$address:25565";
   }
 }

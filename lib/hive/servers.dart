@@ -16,7 +16,7 @@ class ServersController {
   Future<void> saveServerList(List<Servers> servers) async {
     try {
       final Map<dynamic, Servers> serverMap = {
-        for (var server in servers) server.uuid: server
+        for (var server in servers) server.uuid: server,
       };
       await serversBox.putAll(serverMap);
     } catch (e) {
@@ -63,5 +63,9 @@ class ServersController {
 
   int getServerLength() {
     return serversBox.length;
+  }
+
+  Servers? getServer(String uuid) {
+    return serversBox.get(uuid);
   }
 }

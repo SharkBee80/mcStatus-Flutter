@@ -169,6 +169,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.0.8"
+  dart_minecraft:
+    dependency: "direct main"
+    description:
+      name: dart_minecraft
+      sha256: "5ca77023fc901ad4e885ef25071579e47d85668c6fb8d5321ef2eeb4dedf30f2"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.6.0"
   dart_style:
     dependency: transitive
     description:
@@ -275,6 +283,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.0.1"
+  http:
+    dependency: transitive
+    description:
+      name: http
+      sha256: bb2ce4590bc2667c96f318d68cac1b5a7987ec819351d32b1c987239a815e007
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.5.0"
   http_multi_server:
     dependency: transitive
     description:
