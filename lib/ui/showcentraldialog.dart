@@ -102,14 +102,14 @@ void showCentralDialog(BuildContext context, {Servers? server}) {
                     onPressed: () async {
                       final name = nameController.text;
                       final address = addressController.text;
-                      if (!check(context, name, address)) {
+                      if (!_check(context, name, address)) {
                         return;
                       }
                       
                       try {
                         if (isEditing) {
                           // 更新现有服务器
-                          final success = await Server().update(name, address, server!.uuid.toString());
+                          final success = await Server().update(name, address, server.uuid.toString());
                           if (success) {
                             Navigator.pop(context); // 关闭弹窗
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -158,7 +158,7 @@ void showCentralDialog(BuildContext context, {Servers? server}) {
   );
 }
 
-check(context, name, address) {
+_check(context, name, address) {
   if (name == null || name.isEmpty) {
     name = "Minncraft Server";
   }

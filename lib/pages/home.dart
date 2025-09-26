@@ -25,40 +25,46 @@ class _HomePageState extends State<HomePage> {
     _loadServerStatuses();
   }
 
-  Future<void> _loadServerStatuses() async {
-    final servers = _serverController.loadServers();
-    for (final server in servers) {
-      try {
-        final status = await _serverController.pingServer(server.address);
-        if (mounted) {
-          setState(() {
-            _serverStatuses[server.uuid.toString()] = {
-              'online': status != null && status.response != null,
-              'players': status?.response != null
-                  ? '${status.response!.players.online} / ${status.response!.players.max}'
-                  : '0 / 0',
-              'signal': status?.response != null ? '4' : '0', // 4表示满信号，0表示无信号
-              'description':
-                  status?.response?.description.description ?? 'A Minecraft Server',
-            };
-          });
-        }
-      } catch (e) {
-        if (mounted) {
-          setState(() {
-            _serverStatuses[server.uuid.toString()] = {
-              'online': false,
-              'players': '0 / 0',
-              'signal': '0',
-              'description': 'A Minecraft Server',
-            };
-          });
-        }
+  /// 监听服务器列表变化并自动更新状态
+  void _onServersChanged(List<Servers> newServers) {
+    // 检查是否有新增的服务器
+    for (final server in newServers) {
+      final serverKey = server.uuid.toString();
+      if (!_serverStatuses.containsKey(serverKey)) {
+        // 新服务器，立即获取状态
+        _refreshServerStatus(server);
       }
     }
+
+    // 清理已删除服务器的状态
+    final currentServerKeys = newServers.map((s) => s.uuid.toString()).toSet();
+    _serverStatuses.removeWhere((key, value) => !currentServerKeys.contains(key));
   }
 
-  Future<void> _refreshServerStatus(Servers server) async {
+  Future<void> _loadServerStatuses() async {
+    final servers = _serverController.loadServers()
+      ..sort((a, b) => a.sortIndex.compareTo(b.sortIndex)); // 按sortIndex排序
+    
+    // 先为所有服务器设置加载状态
+    if (mounted) {
+      setState(() {
+        for (final server in servers) {
+          _serverStatuses[server.uuid.toString()] = {
+            'online': false,
+            'players': '加载中...',
+            'signal': '0',
+            'description': '正在获取服务器信息...',
+          };
+        }
+      });
+    }
+    
+    // 然后并发获取所有服务器状态
+    final futures = servers.map((server) => _fetchSingleServerStatus(server));
+    await Future.wait(futures);
+  }
+  
+  Future<void> _fetchSingleServerStatus(Servers server) async {
     try {
       final status = await _serverController.pingServer(server.address);
       if (mounted) {
@@ -68,7 +74,7 @@ class _HomePageState extends State<HomePage> {
             'players': status?.response != null
                 ? '${status.response!.players.online} / ${status.response!.players.max}'
                 : '0 / 0',
-            'signal': status?.response != null ? '4' : '0',
+            'signal': status?.response != null ? '4' : '0', // 4表示满信号，0表示无信号
             'description':
                 status?.response?.description.description ?? 'A Minecraft Server',
           };
@@ -88,6 +94,10 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<void> _refreshServerStatus(Servers server) async {
+    await _fetchSingleServerStatus(server);
+  }
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -98,7 +108,13 @@ class _HomePageState extends State<HomePage> {
         return ValueListenableBuilder(
           valueListenable: Hive.box<Servers>('servers').listenable(),
           builder: (context, Box<Servers> box, _) {
-            final servers = box.values.toList();
+            final servers = box.values.toList()
+              ..sort((a, b) => a.sortIndex.compareTo(b.sortIndex)); // 根据sortIndex排序
+            
+            // 监听服务器变化并自动更新状态
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _onServersChanged(servers);
+            });
 
             if (servers.isEmpty) {
               return const Center(child: Text("暂无服务器"));
@@ -117,9 +133,9 @@ class _HomePageState extends State<HomePage> {
                       _serverStatuses[s.uuid.toString()] ??
                       {
                         'online': false,
-                        'players': '0 / 0',
+                        'players': '加载中...',
                         'signal': '0',
-                        'description': 'A Minecraft Server',
+                        'description': '正在获取服务器信息...',
                       };
 
                   return XCard(

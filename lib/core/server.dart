@@ -54,9 +54,39 @@ class Server {
 
   Future<void> delete(Servers server) async {
     try {
+      final deletedSortIndex = server.sortIndex;
+      print('删除服务器: ${server.name}, sortIndex: $deletedSortIndex');
+      
+      // 删除服务器
       await serversController.deleteServer(server);
+      
+      // 获取所有剩余服务器
+      final remainingServers = serversController.loadServers();
+      
+      // 找到所有需要调整sortIndex的服务器（sortIndex大于被删除服务器的）
+      final serversToUpdate = remainingServers
+          .where((s) => s.sortIndex > deletedSortIndex)
+          .toList();
+      
+      if (serversToUpdate.isNotEmpty) {
+        print('需要调整的服务器数量: ${serversToUpdate.length}');
+        
+        // 将这些服务器的sortIndex往前移动1位
+        for (final serverToUpdate in serversToUpdate) {
+          final oldIndex = serverToUpdate.sortIndex;
+          serverToUpdate.sortIndex = serverToUpdate.sortIndex - 1;
+          print('调整服务器: ${serverToUpdate.name}, 从sortIndex $oldIndex → ${serverToUpdate.sortIndex}');
+        }
+        
+        // 批量更新所有受影响的服务器
+        await serversController.updateServers(serversToUpdate);
+        print('批量更新完成');
+      } else {
+        print('无需调整的服务器');
+      }
     } catch (e) {
       // 处理保存过程中可能发生的异常
+      print('删除服务器失败: $e');
       rethrow;
     }
   }
@@ -66,6 +96,16 @@ class Server {
       return serversController.loadServers();
     } catch (e) {
       // 处理保存过程中可能发生的异常
+      rethrow;
+    }
+  }
+
+  /// 批量更新服务器
+  Future<void> updateServers(List<Servers> servers) async {
+    try {
+      await serversController.updateServers(servers);
+    } catch (e) {
+      // 处理批量更新过程中可能发生的异常
       rethrow;
     }
   }
