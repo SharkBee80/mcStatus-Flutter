@@ -11,6 +11,10 @@ class XCard extends StatefulWidget {
   final String players;
   final VoidCallback? onRefresh;
   final VoidCallback? onLongPress;
+  final VoidCallback? onTap; // 点击事件
+  final bool isMovingMode; // 是否处于移动模式
+  final bool isMovingTarget; // 是否为当前移动的目标
+  final VoidCallback? onMoveToPosition; // 移动到此位置的回调
 
   const XCard({
     super.key,
@@ -23,6 +27,10 @@ class XCard extends StatefulWidget {
     this.players = "00 / 00",
     this.onRefresh,
     this.onLongPress,
+    this.onTap,
+    this.isMovingMode = false,
+    this.isMovingTarget = false,
+    this.onMoveToPosition,
   });
 
   @override
@@ -33,51 +41,176 @@ class _XCardState extends State<XCard> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: widget.onRefresh,
+      onTap: widget.isMovingMode 
+          ? widget.onMoveToPosition 
+          : widget.onTap, // 移动模式下使用移动回调，否则使用点击回调
       onLongPress: widget.onLongPress,
       child: AspectRatio(
         aspectRatio: 8 / 3, // 规定卡片比例
         child: Container(
           margin: const EdgeInsets.all(6),
           padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xFF1a1a2e), Color(0xFF16213e), Color(0xFF0f3460)],
-            ),
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.3),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
-            border: Border.all(
-              color: Colors.blueAccent.withOpacity(0.2),
-              width: 1,
-            ),
-          ),
-          child: Row(
+          decoration: _buildCardDecoration(),
+          child: Stack(
             children: [
-              _buildImage(), // 固定为正方形，跟随高度
-              const SizedBox(width: 6),
-              Expanded(
-                // 占据剩余空间
-                child: Row(
-                  children: [
-                    Expanded(child: _buildInfo()), // 自适应填充
-                    const SizedBox(width: 6),
-                    _buildStatus(), // 按内容宽度
-                  ],
-                ),
+              // 主要内容
+              Row(
+                children: [
+                  _buildImage(), // 固定为正方形，跟随高度
+                  const SizedBox(width: 6),
+                  Expanded(
+                    // 占据剩余空间
+                    child: Row(
+                      children: [
+                        Expanded(child: _buildInfo()), // 自适应填充
+                        const SizedBox(width: 6),
+                        _buildStatus(), // 按内容宽度
+                      ],
+                    ),
+                  ),
+                ],
               ),
+              
+              // 移动模式覆盖层
+              if (widget.isMovingMode) _buildMoveOverlay(),
             ],
           ),
         ),
       ),
     );
+  }
+
+  /// 构建卡片装饰
+  BoxDecoration _buildCardDecoration() {
+    if (widget.isMovingMode) {
+      if (widget.isMovingTarget) {
+        // 当前移动的目标：金色边框 + 半透明
+        return BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF1a1a2e), Color(0xFF16213e), Color(0xFF0f3460)],
+          ),
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.amber.withOpacity(0.5),
+              blurRadius: 15,
+              offset: const Offset(0, 4),
+            ),
+          ],
+          border: Border.all(
+            color: Colors.amber,
+            width: 2,
+          ),
+        );
+      } else {
+        // 可放置目标：蓝色边框
+        return BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF1a1a2e), Color(0xFF16213e), Color(0xFF0f3460)],
+          ),
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.blue.withOpacity(0.3),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+          border: Border.all(
+            color: Colors.blue.withOpacity(0.7),
+            width: 2,
+          ),
+        );
+      }
+    } else {
+      // 正常模式
+      return BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF1a1a2e), Color(0xFF16213e), Color(0xFF0f3460)],
+        ),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+        border: Border.all(
+          color: Colors.blueAccent.withOpacity(0.2),
+          width: 1,
+        ),
+      );
+    }
+  }
+
+  /// 构建移动模式覆盖层
+  Widget _buildMoveOverlay() {
+    if (widget.isMovingTarget) {
+      // 当前移动的目标：显示移动中的提示
+      return Container(
+        decoration: BoxDecoration(
+          color: Colors.amber.withOpacity(0.2),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: const Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.open_with,
+                color: Colors.amber,
+                size: 24,
+              ),
+              SizedBox(height: 4),
+              Text(
+                '移动中...',
+                style: TextStyle(
+                  color: Colors.amber,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    } else {
+      // 可放置目标：显示放置提示
+      return Container(
+        decoration: BoxDecoration(
+          color: Colors.blue.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: const Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.place,
+                color: Colors.blue,
+                size: 24,
+              ),
+              SizedBox(height: 4),
+              Text(
+                '点击放置这里',
+                style: TextStyle(
+                  color: Colors.blue,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
   }
 
   Widget _buildImage() {

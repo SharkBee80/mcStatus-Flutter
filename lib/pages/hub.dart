@@ -15,13 +15,49 @@ class MyHubPage extends StatefulWidget {
 }
 
 class _MyHubPageState extends State<MyHubPage> {
+  /// 获取刷新按钮的提示文字
+  String _getRefreshTooltip(int selectedIndex) {
+    switch (selectedIndex) {
+      case 0:
+        return '刷新服务器状态';
+      case 1:
+        return '刷新信息页面';
+      case 2:
+        return '刷新More页面';
+      case 3:
+        return '刷新设置页面';
+      default:
+        return '刷新';
+    }
+  }
   @override
   Widget build(BuildContext context) {
     Color bottomNavigationBarColor = Colors.grey.shade200;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text("Minecraft Servers Status"),
+        title: const Text("Minecraft Servers Status"),
+        actions: [
+          Consumer<PageViewProvider>(
+            builder: (context, provider, child) {
+              if (provider.isMovingMode) {
+                // 移动模式：显示取消按钮
+                return IconButton(
+                  onPressed: () => provider.cancelMove(),
+                  icon: const Icon(Icons.close),
+                  tooltip: '取消移动',
+                );
+              } else {
+                // 正常模式：显示刷新按钮
+                return IconButton(
+                  onPressed: () => provider.refresh(),
+                  icon: const Icon(Icons.refresh),
+                  tooltip: _getRefreshTooltip(provider.selectedIndex),
+                );
+              }
+            },
+          ),
+        ],
       ),
       // body: Center(
       //   child: Column(

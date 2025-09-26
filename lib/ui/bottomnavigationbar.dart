@@ -63,12 +63,11 @@ class XBottomNavigationBar extends StatelessWidget {
   void onTap(BuildContext context, int index) {
     if (index != context.read<PageViewProvider>().selectedIndex) {
       context.read<PageViewProvider>().setSelectedIndex(index);
-      // context.read<PageViewProvider>().pageController.animateToPage(
-      //   index,
-      //   duration: Duration(milliseconds: 200),
-      //   curve: Curves.easeInOut,
-      // );
       context.read<PageViewProvider>().pageController.jumpToPage(index);
+      
+      // 清除当前回调，由新页面重新注册
+      context.read<PageViewProvider>().setRefreshCallback(index, null);
+      print('底部导航点击，切换到页面: $index，已清除回调'); // 调试信息
     }
   }
 }
