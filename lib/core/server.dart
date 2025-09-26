@@ -28,14 +28,17 @@ class Server {
     }
   }
 
-  Future<bool> update(String name, String address, String uuid) async {
+  Future<bool> update(String name, String address, String uuidStr) async {
     try {
+      // 将字符串转换为int
+      int uuid = int.parse(uuidStr);
       Servers? server = serversController.getServer(uuid);
       if (server == null) {
         return false;
       }
       server.name = name;
       server.address = address;
+      server.fulladdress = _getFullAddress(address);
       server.edittime = DateTime.now().toString();
       await serversController.updateServer(server);
       return true;

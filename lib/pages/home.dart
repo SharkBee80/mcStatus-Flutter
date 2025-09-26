@@ -32,21 +32,21 @@ class _HomePageState extends State<HomePage> {
         final status = await _serverController.pingServer(server.address);
         if (mounted) {
           setState(() {
-            _serverStatuses[server.address] = {
+            _serverStatuses[server.uuid.toString()] = {
               'online': status != null && status.response != null,
               'players': status?.response != null
                   ? '${status.response!.players.online} / ${status.response!.players.max}'
                   : '0 / 0',
               'signal': status?.response != null ? '4' : '0', // 4表示满信号，0表示无信号
               'description':
-                  status?.response?.description ?? 'A Minecraft Server',
+                  status?.response?.description.description ?? 'A Minecraft Server',
             };
           });
         }
       } catch (e) {
         if (mounted) {
           setState(() {
-            _serverStatuses[server.address] = {
+            _serverStatuses[server.uuid.toString()] = {
               'online': false,
               'players': '0 / 0',
               'signal': '0',
@@ -58,26 +58,26 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<void> _refreshServerStatus(String address) async {
+  Future<void> _refreshServerStatus(Servers server) async {
     try {
-      final status = await _serverController.pingServer(address);
+      final status = await _serverController.pingServer(server.address);
       if (mounted) {
         setState(() {
-          _serverStatuses[address] = {
+          _serverStatuses[server.uuid.toString()] = {
             'online': status != null && status.response != null,
             'players': status?.response != null
                 ? '${status.response!.players.online} / ${status.response!.players.max}'
                 : '0 / 0',
             'signal': status?.response != null ? '4' : '0',
             'description':
-                status?.response?.description ?? 'A Minecraft Server',
+                status?.response?.description.description ?? 'A Minecraft Server',
           };
         });
       }
     } catch (e) {
       if (mounted) {
         setState(() {
-          _serverStatuses[address] = {
+          _serverStatuses[server.uuid.toString()] = {
             'online': false,
             'players': '0 / 0',
             'signal': '0',
@@ -114,7 +114,7 @@ class _HomePageState extends State<HomePage> {
                 childAspectRatio: 8 / 3,
                 children: servers.map((s) {
                   final status =
-                      _serverStatuses[s.address] ??
+                      _serverStatuses[s.uuid.toString()] ??
                       {
                         'online': false,
                         'players': '0 / 0',
@@ -123,13 +123,14 @@ class _HomePageState extends State<HomePage> {
                       };
 
                   return XCard(
+                    serverId: s.uuid.toString(),
                     title: s.name,
                     address: s.address,
                     description: status['description'] as String,
                     imagePath: "assets/img/img.png",
                     signal: status['signal'] as String,
                     players: status['players'] as String,
-                    onRefresh: () => _refreshServerStatus(s.address),
+                    onRefresh: () => _refreshServerStatus(s),
                     onLongPress: () => _handleServerLongPress(s),
                   );
                 }).toList(),
@@ -165,8 +166,7 @@ class _HomePageState extends State<HomePage> {
 
   /// 处理编辑服务器
   void _handleEditServer(Servers server) {
-    showCentralDialog(context);
-    // TODO: 预填充现有服务器信息进行编辑
+    showCentralDialog(context, server: server);
   }
 
   /// 处理删除服务器
@@ -175,7 +175,7 @@ class _HomePageState extends State<HomePage> {
       await _serverController.delete(server);
       if (mounted) {
         setState(() {
-          _serverStatuses.remove(server.address);
+          _serverStatuses.remove(server.uuid.toString());
         });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

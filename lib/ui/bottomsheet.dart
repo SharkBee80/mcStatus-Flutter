@@ -142,7 +142,7 @@ class _ServerActionBottomSheet extends StatelessWidget {
               iconColor: Colors.red,
               onTap: () {
                 Navigator.pop(context);
-                _showDeleteConfirmation(context);
+                _showDeleteConfirmation(context, onDelete);
               },
             ),
 
@@ -228,7 +228,7 @@ class _ServerActionBottomSheet extends StatelessWidget {
   }
 
   /// 显示删除确认对话框
-  void _showDeleteConfirmation(BuildContext context) {
+  void _showDeleteConfirmation(BuildContext context, VoidCallback onConfirmDelete) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -242,7 +242,7 @@ class _ServerActionBottomSheet extends StatelessWidget {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              onDelete();
+              onConfirmDelete();
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
             child: const Text('删除'),

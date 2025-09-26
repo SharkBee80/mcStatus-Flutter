@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mcstatus/pkg/auto_size_text/auto_size_builder/auto_size_text.dart';
 
 class XCard extends StatefulWidget {
+  final String? serverId;
   final String title;
   final String address;
   final String description;
@@ -13,6 +14,7 @@ class XCard extends StatefulWidget {
 
   const XCard({
     super.key,
+    this.serverId,
     this.title = "Hypixel Network",
     this.address = "mc.hypixel.net",
     this.description = "A Minecraft Server",

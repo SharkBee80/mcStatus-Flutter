@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 import 'package:mcstatus/core/server.dart';
+import 'package:mcstatus/models/servers.dart';
 
 /// Shows a blurred dialog with optional custom background and blur settings.
 Future<T?> showBlurredDialog<T>({
@@ -30,9 +31,14 @@ Future<T?> showBlurredDialog<T>({
   );
 }
 
-void showCentralDialog(BuildContext context) {
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController addressController = TextEditingController();
+void showCentralDialog(BuildContext context, {Servers? server}) {
+  final TextEditingController nameController = TextEditingController(
+    text: server?.name ?? '',
+  );
+  final TextEditingController addressController = TextEditingController(
+    text: server?.address ?? '',
+  );
+  final bool isEditing = server != null;
 
   showBlurredDialog(
     context: context,
@@ -48,9 +54,9 @@ void showCentralDialog(BuildContext context) {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              const Text(
-                "Minecraft Server",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              Text(
+                isEditing ? "编辑服务器" : "添加服务器",
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
               const Text("Name", style: TextStyle(fontSize: 16)),
@@ -99,13 +105,48 @@ void showCentralDialog(BuildContext context) {
                       if (!check(context, name, address)) {
                         return;
                       }
-                      await Server().save(name, address);
-                      Navigator.pop(context); // 关闭弹窗
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("提交成功: $name / $address")),
-                      );
+                      
+                      try {
+                        if (isEditing) {
+                          // 更新现有服务器
+                          final success = await Server().update(name, address, server!.uuid.toString());
+                          if (success) {
+                            Navigator.pop(context); // 关闭弹窗
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text("更新成功: $name / $address"),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("更新失败: 服务器不存在"),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                        } else {
+                          // 添加新服务器
+                          await Server().save(name, address);
+                          Navigator.pop(context); // 关闭弹窗
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text("添加成功: $name / $address"),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(isEditing ? "更新失败: $e" : "添加失败: $e"),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
                     },
-                    child: const Text("提交"),
+                    child: Text(isEditing ? "更新" : "添加"),
                   ),
                 ],
               ),

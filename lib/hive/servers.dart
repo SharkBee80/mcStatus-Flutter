@@ -65,7 +65,7 @@ class ServersController {
     return serversBox.length;
   }
 
-  Servers? getServer(String uuid) {
+  Servers? getServer(int uuid) {
     return serversBox.get(uuid);
   }
 }
