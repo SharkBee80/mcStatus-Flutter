@@ -11,12 +11,17 @@ class InfoPage extends StatefulWidget {
   State<InfoPage> createState() => _InfoPageState();
 }
 
-class _InfoPageState extends State<InfoPage> {
+class _InfoPageState extends State<InfoPage>
+    with AutomaticKeepAliveClientMixin {
   String _lastRefreshTime = '从未刷新';
   bool _isLoading = false;
   bool _hasRegisteredCallback = false; // 标记是否已注册回调
   final Server _serverController = Server();
   Map<String, dynamic>? _serverStatus; // 服务器状态信息
+  Servers? _currentServer; // 当前显示的服务器
+
+  @override
+  bool get wantKeepAlive => true; // 保持页面活跃状态
 
   @override
   void initState() {
@@ -29,6 +34,13 @@ class _InfoPageState extends State<InfoPage> {
         1,
         _resetCallbackFlag,
       );
+
+      // 初始化当前服务器并刷新信息
+      final selectedServer = context.read<PageViewProvider>().selectedServer;
+      if (selectedServer != null) {
+        _currentServer = selectedServer;
+        _refreshServerInfo(selectedServer);
+      }
     });
   }
 
@@ -104,14 +116,6 @@ class _InfoPageState extends State<InfoPage> {
           _lastRefreshTime = DateTime.now().toString().substring(0, 19);
           _isLoading = false;
         });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('服务器信息刷新完成: ${server.name}'),
-            backgroundColor: Colors.green,
-            duration: const Duration(seconds: 1),
-          ),
-        );
       }
     } catch (e) {
       if (mounted) {
@@ -156,14 +160,6 @@ class _InfoPageState extends State<InfoPage> {
           _lastRefreshTime = DateTime.now().toString().substring(0, 19);
           _isLoading = false;
         });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('信息页面刷新完成'),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 1),
-          ),
-        );
       }
     } catch (e) {
       if (mounted) {
@@ -180,6 +176,8 @@ class _InfoPageState extends State<InfoPage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // 保持页面活跃状态必需的调用
+    
     return Consumer<PageViewProvider>(
       builder: (context, provider, child) {
         // 当页面切换到Info页且还未注册回调时，重新注册
@@ -192,6 +190,29 @@ class _InfoPageState extends State<InfoPage> {
         }
 
         final selectedServer = provider.selectedServer;
+
+        // 检查服务器是否发生变化
+        if (selectedServer != _currentServer) {
+          _currentServer = selectedServer;
+
+          // 当服务器变化时，清空旧的状态并刷新新服务器信息
+          if (selectedServer != null) {
+            // 清空旧的服务器状态
+            _serverStatus = null;
+            _lastRefreshTime = '从未刷新';
+
+            // 异步刷新新服务器信息
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted && selectedServer == _currentServer) {
+                _refreshServerInfo(selectedServer);
+              }
+            });
+          } else {
+            // 如果没有选中的服务器，清空状态
+            _serverStatus = null;
+            _lastRefreshTime = '从未刷新';
+          }
+        }
 
         return RefreshIndicator(
           onRefresh: () => selectedServer != null

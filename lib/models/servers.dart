@@ -1,5 +1,6 @@
 import 'package:hive/hive.dart';
 
+// flutter packages pub run build_runner build
 part 'servers.g.dart'; // 自动生成文件
 
 @HiveType(typeId: 0)

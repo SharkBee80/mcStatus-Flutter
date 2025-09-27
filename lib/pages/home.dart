@@ -17,11 +17,15 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>
+    with AutomaticKeepAliveClientMixin {
   final Server _serverController = Server();
   final Map<String, Map<String, dynamic>> _serverStatuses = {};
   Servers? _movingServer; // 当前移动的服务器
   bool _hasRegisteredCallback = false; // 标记是否已注册回调
+
+  @override
+  bool get wantKeepAlive => true; // 保持页面活跃状态
 
   @override
   void initState() {
@@ -35,6 +39,8 @@ class _HomePageState extends State<HomePage> {
         0,
         _resetCallbackFlag,
       );
+      // 验证选中的服务器是否还存在
+      context.read<PageViewProvider>().validateSelectedServer();
     });
   }
 
@@ -118,9 +124,9 @@ class _HomePageState extends State<HomePage> {
                 ? '${status.response!.players.online} / ${status.response!.players.max}'
                 : '0 / 0',
             'signal': status?.response != null ? '4' : '0', // 4表示满信号，0表示无信号
-            'description':
-                status?.response?.description.description ??
-                'A Minecraft Server',
+            'description': status?.response?.description.description != ''
+                ? status?.response?.description.description
+                : 'A Minecraft Server',
           };
         });
       }
@@ -144,6 +150,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // 保持页面活跃状态必需的调用
+    
     return Consumer<PageViewProvider>(
       builder: (context, provider, child) {
         final isMovingMode = provider.isMovingMode;
@@ -243,9 +251,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   /// 处理服务器卡片点击事件
-  void _handleServerTap(Servers server) {
+  void _handleServerTap(Servers server) async {
     // 设置选中的服务器并切换到info页面
-    context.read<PageViewProvider>().setSelectedServer(server);
+    await context.read<PageViewProvider>().setSelectedServer(server);
   }
 
   /// 处理服务器卡片长按事件
@@ -363,6 +371,7 @@ class _HomePageState extends State<HomePage> {
   void _handleDeleteServer(Servers server) async {
     try {
       await _serverController.delete(server);
+
       if (mounted) {
         setState(() {
           _serverStatuses.remove(server.uuid.toString());
