@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:mcstatus/pages/hub.dart';
 import 'package:mcstatus/utils/activator.dart';
 import 'package:mcstatus/pages/activation.dart';
+import 'package:mcstatus/utils/debug.dart';
 
 class GatePage extends StatefulWidget {
   const GatePage({super.key});
@@ -15,6 +16,7 @@ class GatePage extends StatefulWidget {
 class _GatePageState extends State<GatePage> {
   bool _isChecked = false;
   bool _isActivated = false;
+  String _errorMessage = '';
 
   @override
   void initState() {
@@ -25,11 +27,15 @@ class _GatePageState extends State<GatePage> {
   /// 检查应用是否已激活
   Future<void> _checkActivation() async {
     try {
+      DebugX.console('Starting activation check...');
       final bool activated = await Activator.isAppActivated();
+      DebugX.console('Activation check result: $activated');
+      
       if (mounted) {
         setState(() {
           _isActivated = activated;
           _isChecked = true;
+          _errorMessage = '';
         });
 
         if (activated) {
@@ -37,9 +43,12 @@ class _GatePageState extends State<GatePage> {
         }
       }
     } catch (e) {
+      DebugX.console('Error during activation check: $e');
       if (mounted) {
         setState(() {
           _isChecked = true;
+          _isActivated = false;
+          _errorMessage = 'activation check failed: $e';
         });
       }
     }
@@ -53,15 +62,17 @@ class _GatePageState extends State<GatePage> {
         : (Platform.isWindows || Platform.isMacOS || Platform.isLinux);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          // builder: (context) => isDesktop
-          //   ? const DesktopPage()
-          //   : const MobilePage(),
-          builder: (context) => const MyHubPage(),
-        ),
-      );
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            // builder: (context) => isDesktop
+            //   ? const DesktopPage()
+            //   : const MobilePage(),
+            builder: (context) => const MyHubPage(),
+          ),
+        );
+      }
     });
   }
 
@@ -69,7 +80,18 @@ class _GatePageState extends State<GatePage> {
   Widget build(BuildContext context) {
     if (!_isChecked) {
       // 检查激活状态中
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return const Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              Text('正在检查激活状态...'),
+            ],
+          ),
+        ),
+      );
     }
 
     if (!_isActivated) {
@@ -78,6 +100,17 @@ class _GatePageState extends State<GatePage> {
     }
 
     // 已激活，显示加载指示器并准备导航
-    return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    return const Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 16),
+            Text('正在启动应用...'),
+          ],
+        ),
+      ),
+    );
   }
 }
