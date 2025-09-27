@@ -31,7 +31,10 @@ class _HomePageState extends State<HomePage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _registerRefreshCallback();
       // 注册重置标记的回调（使用页面索引 0）
-      context.read<PageViewProvider>().setResetCallbackFlagCallback(0, _resetCallbackFlag);
+      context.read<PageViewProvider>().setResetCallbackFlagCallback(
+        0,
+        _resetCallbackFlag,
+      );
     });
   }
 
@@ -76,13 +79,15 @@ class _HomePageState extends State<HomePage> {
 
     // 清理已删除服务器的状态
     final currentServerKeys = newServers.map((s) => s.uuid.toString()).toSet();
-    _serverStatuses.removeWhere((key, value) => !currentServerKeys.contains(key));
+    _serverStatuses.removeWhere(
+      (key, value) => !currentServerKeys.contains(key),
+    );
   }
 
   Future<void> _loadServerStatuses() async {
     final servers = _serverController.loadServers()
       ..sort((a, b) => a.sortIndex.compareTo(b.sortIndex)); // 按sortIndex排序
-    
+
     // 先为所有服务器设置加载状态
     if (mounted) {
       setState(() {
@@ -96,12 +101,12 @@ class _HomePageState extends State<HomePage> {
         }
       });
     }
-    
+
     // 然后并发获取所有服务器状态
     final futures = servers.map((server) => _fetchSingleServerStatus(server));
     await Future.wait(futures);
   }
-  
+
   Future<void> _fetchSingleServerStatus(Servers server) async {
     try {
       final status = await _serverController.pingServer(server.address);
@@ -114,7 +119,8 @@ class _HomePageState extends State<HomePage> {
                 : '0 / 0',
             'signal': status?.response != null ? '4' : '0', // 4表示满信号，0表示无信号
             'description':
-                status?.response?.description.description ?? 'A Minecraft Server',
+                status?.response?.description.description ??
+                'A Minecraft Server',
           };
         });
       }
@@ -141,7 +147,7 @@ class _HomePageState extends State<HomePage> {
     return Consumer<PageViewProvider>(
       builder: (context, provider, child) {
         final isMovingMode = provider.isMovingMode;
-        
+
         // 当页面切换到Home页且还未注册回调时，重新注册
         if (provider.selectedIndex == 0 && !_hasRegisteredCallback) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -150,7 +156,7 @@ class _HomePageState extends State<HomePage> {
             }
           });
         }
-        
+
         return Column(
           children: [
             // 主要内容
@@ -158,14 +164,17 @@ class _HomePageState extends State<HomePage> {
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   const minWidth = 320.0; // 规定最小宽度
-                  int crossAxisCount = (constraints.maxWidth / minWidth).floor();
+                  int crossAxisCount = (constraints.maxWidth / minWidth)
+                      .floor();
                   if (crossAxisCount < 1) crossAxisCount = 1;
                   return ValueListenableBuilder(
                     valueListenable: Hive.box<Servers>('servers').listenable(),
                     builder: (context, Box<Servers> box, _) {
                       final servers = box.values.toList()
-                        ..sort((a, b) => a.sortIndex.compareTo(b.sortIndex)); // 根据sortIndex排序
-                      
+                        ..sort(
+                          (a, b) => a.sortIndex.compareTo(b.sortIndex),
+                        ); // 根据sortIndex排序
+
                       // 监听服务器变化并自动更新状态
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         _onServersChanged(servers);
@@ -201,12 +210,23 @@ class _HomePageState extends State<HomePage> {
                               imagePath: "assets/img/img.png",
                               signal: status['signal'] as String,
                               players: status['players'] as String,
-                              onTap: isMovingMode ? null : () => _handleServerTap(s), // 移动模式下禁用点击
-                              onRefresh: isMovingMode ? null : () => _refreshServerStatus(s), // 移动模式下禁用刷新
-                              onLongPress: isMovingMode ? null : () => _handleServerLongPress(s), // 移动模式下禁用长按
+                              onTap: isMovingMode
+                                  ? null
+                                  : () => _handleServerTap(s),
+                              // 移动模式下禁用点击
+                              onRefresh: isMovingMode
+                                  ? null
+                                  : () => _refreshServerStatus(s),
+                              // 移动模式下禁用刷新
+                              onLongPress: isMovingMode
+                                  ? null
+                                  : () => _handleServerLongPress(s),
+                              // 移动模式下禁用长按
                               isMovingMode: isMovingMode,
                               isMovingTarget: _movingServer?.uuid == s.uuid,
-                              onMoveToPosition: isMovingMode ? () => _handleMoveToPosition(s) : null,
+                              onMoveToPosition: isMovingMode
+                                  ? () => _handleMoveToPosition(s)
+                                  : null,
                             );
                           }).toList(),
                         ),
@@ -244,21 +264,11 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _movingServer = server;
     });
-    
+
     // 通知Provider进入移动模式
-    context.read<PageViewProvider>().setMovingMode(true, cancelCallback: _cancelMoveMode);
-    
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('移动模式已开启，点击目标位置放置 "${server.name}"'),
-        backgroundColor: Colors.blue,
-        action: SnackBarAction(
-          label: '取消', 
-          textColor: Colors.white,
-          onPressed: _cancelMoveMode,
-        ),
-        duration: const Duration(seconds: 10),
-      ),
+    context.read<PageViewProvider>().setMovingMode(
+      true,
+      cancelCallback: _cancelMoveMode,
     );
   }
 
@@ -267,10 +277,10 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _movingServer = null;
     });
-    
+
     // 通知Provider退出移动模式
     context.read<PageViewProvider>().setMovingMode(false);
-    
+
     // 隐藏SnackBar
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
   }
@@ -287,7 +297,9 @@ class _HomePageState extends State<HomePage> {
       final targetSortIndex = targetServer.sortIndex;
       final movingSortIndex = movingServer.sortIndex;
 
-      print('移动服务器: ${movingServer.name} (从sortIndex $movingSortIndex 到 $targetSortIndex)');
+      print(
+        '移动服务器: ${movingServer.name} (从sortIndex $movingSortIndex 到 $targetSortIndex)',
+      );
 
       // 获取所有服务器
       final allServers = _serverController.loadServers();
@@ -296,7 +308,8 @@ class _HomePageState extends State<HomePage> {
       if (movingSortIndex < targetSortIndex) {
         // 向后移动：中间的服务器往前移动1位
         for (final server in allServers) {
-          if (server.sortIndex > movingSortIndex && server.sortIndex <= targetSortIndex) {
+          if (server.sortIndex > movingSortIndex &&
+              server.sortIndex <= targetSortIndex) {
             server.sortIndex = server.sortIndex - 1;
             serversToUpdate.add(server);
           }
@@ -305,7 +318,8 @@ class _HomePageState extends State<HomePage> {
       } else {
         // 向前移动：中间的服务器往后移动1位
         for (final server in allServers) {
-          if (server.sortIndex >= targetSortIndex && server.sortIndex < movingSortIndex) {
+          if (server.sortIndex >= targetSortIndex &&
+              server.sortIndex < movingSortIndex) {
             server.sortIndex = server.sortIndex + 1;
             serversToUpdate.add(server);
           }
@@ -334,10 +348,7 @@ class _HomePageState extends State<HomePage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('移动失败: $e'),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text('移动失败: $e'), backgroundColor: Colors.red),
         );
       }
     }

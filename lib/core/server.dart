@@ -56,28 +56,30 @@ class Server {
     try {
       final deletedSortIndex = server.sortIndex;
       print('删除服务器: ${server.name}, sortIndex: $deletedSortIndex');
-      
+
       // 删除服务器
       await serversController.deleteServer(server);
-      
+
       // 获取所有剩余服务器
       final remainingServers = serversController.loadServers();
-      
+
       // 找到所有需要调整sortIndex的服务器（sortIndex大于被删除服务器的）
       final serversToUpdate = remainingServers
           .where((s) => s.sortIndex > deletedSortIndex)
           .toList();
-      
+
       if (serversToUpdate.isNotEmpty) {
         print('需要调整的服务器数量: ${serversToUpdate.length}');
-        
+
         // 将这些服务器的sortIndex往前移动1位
         for (final serverToUpdate in serversToUpdate) {
           final oldIndex = serverToUpdate.sortIndex;
           serverToUpdate.sortIndex = serverToUpdate.sortIndex - 1;
-          print('调整服务器: ${serverToUpdate.name}, 从sortIndex $oldIndex → ${serverToUpdate.sortIndex}');
+          print(
+            '调整服务器: ${serverToUpdate.name}, 从sortIndex $oldIndex → ${serverToUpdate.sortIndex}',
+          );
         }
-        
+
         // 批量更新所有受影响的服务器
         await serversController.updateServers(serversToUpdate);
         print('批量更新完成');
@@ -116,7 +118,7 @@ class Server {
       final split = fullAddress.split(':');
       final host = split[0];
       final port = int.parse(split[1]);
-      
+
       final response = await ping(host, port: port);
       return response;
     } catch (e) {
@@ -131,7 +133,7 @@ class Server {
       final split = fullAddress.split(':');
       final host = split[0];
       final port = int.parse(split[1]);
-      
+
       final response = await ping(host, port: port);
       return response;
     } catch (e) {

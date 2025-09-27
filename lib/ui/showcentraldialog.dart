@@ -56,7 +56,10 @@ void showCentralDialog(BuildContext context, {Servers? server}) {
             children: <Widget>[
               Text(
                 isEditing ? "编辑服务器" : "添加服务器",
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 10),
               const Text("Name", style: TextStyle(fontSize: 16)),
@@ -105,11 +108,15 @@ void showCentralDialog(BuildContext context, {Servers? server}) {
                       if (!_check(context, name, address)) {
                         return;
                       }
-                      
+
                       try {
                         if (isEditing) {
                           // 更新现有服务器
-                          final success = await Server().update(name, address, server.uuid.toString());
+                          final success = await Server().update(
+                            name,
+                            address,
+                            server.uuid.toString(),
+                          );
                           if (success) {
                             Navigator.pop(context); // 关闭弹窗
                             ScaffoldMessenger.of(context).showSnackBar(

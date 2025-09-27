@@ -64,7 +64,7 @@ class XBottomNavigationBar extends StatelessWidget {
     if (index != context.read<PageViewProvider>().selectedIndex) {
       context.read<PageViewProvider>().setSelectedIndex(index);
       context.read<PageViewProvider>().pageController.jumpToPage(index);
-      
+
       // 清除当前回调，由新页面重新注册
       context.read<PageViewProvider>().setRefreshCallback(index, null);
       print('底部导航点击，切换到页面: $index，已清除回调'); // 调试信息

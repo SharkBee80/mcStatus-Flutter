@@ -228,7 +228,10 @@ class _ServerActionBottomSheet extends StatelessWidget {
   }
 
   /// 显示删除确认对话框
-  void _showDeleteConfirmation(BuildContext context, VoidCallback onConfirmDelete) {
+  void _showDeleteConfirmation(
+    BuildContext context,
+    VoidCallback onConfirmDelete,
+  ) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

@@ -41,8 +41,8 @@ class _XCardState extends State<XCard> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: widget.isMovingMode 
-          ? widget.onMoveToPosition 
+      onTap: widget.isMovingMode
+          ? widget.onMoveToPosition
           : widget.onTap, // 移动模式下使用移动回调，否则使用点击回调
       onLongPress: widget.onLongPress,
       child: AspectRatio(
@@ -70,7 +70,7 @@ class _XCardState extends State<XCard> {
                   ),
                 ],
               ),
-              
+
               // 移动模式覆盖层
               if (widget.isMovingMode) _buildMoveOverlay(),
             ],
@@ -99,10 +99,7 @@ class _XCardState extends State<XCard> {
               offset: const Offset(0, 4),
             ),
           ],
-          border: Border.all(
-            color: Colors.amber,
-            width: 2,
-          ),
+          border: Border.all(color: Colors.amber, width: 2),
         );
       } else {
         // 可放置目标：蓝色边框
@@ -120,10 +117,7 @@ class _XCardState extends State<XCard> {
               offset: const Offset(0, 4),
             ),
           ],
-          border: Border.all(
-            color: Colors.blue.withOpacity(0.7),
-            width: 2,
-          ),
+          border: Border.all(color: Colors.blue.withOpacity(0.7), width: 2),
         );
       }
     } else {
@@ -142,10 +136,7 @@ class _XCardState extends State<XCard> {
             offset: const Offset(0, 4),
           ),
         ],
-        border: Border.all(
-          color: Colors.blueAccent.withOpacity(0.2),
-          width: 1,
-        ),
+        border: Border.all(color: Colors.blueAccent.withOpacity(0.2), width: 1),
       );
     }
   }
@@ -163,11 +154,7 @@ class _XCardState extends State<XCard> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.open_with,
-                color: Colors.amber,
-                size: 24,
-              ),
+              Icon(Icons.open_with, color: Colors.amber, size: 24),
               SizedBox(height: 4),
               Text(
                 '移动中...',
@@ -192,11 +179,7 @@ class _XCardState extends State<XCard> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.place,
-                color: Colors.blue,
-                size: 24,
-              ),
+              Icon(Icons.place, color: Colors.blue, size: 24),
               SizedBox(height: 4),
               Text(
                 '点击放置这里',
@@ -300,7 +283,9 @@ class _XCardState extends State<XCard> {
               ),
               child: Center(
                 child: Icon(
-                  widget.signal == '0' ? Icons.signal_wifi_off : Icons.signal_wifi_4_bar,
+                  widget.signal == '0'
+                      ? Icons.signal_wifi_off
+                      : Icons.signal_wifi_4_bar,
                   color: Colors.white,
                   size: 16,
                 ),

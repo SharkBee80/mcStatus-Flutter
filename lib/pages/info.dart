@@ -25,7 +25,10 @@ class _InfoPageState extends State<InfoPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _registerRefreshCallback();
       // 注册重置标记的回调（使用页面索引 1）
-      context.read<PageViewProvider>().setResetCallbackFlagCallback(1, _resetCallbackFlag);
+      context.read<PageViewProvider>().setResetCallbackFlagCallback(
+        1,
+        _resetCallbackFlag,
+      );
     });
   }
 
@@ -65,14 +68,14 @@ class _InfoPageState extends State<InfoPage> {
   /// 刷新选中服务器信息
   Future<void> _refreshServerInfo(Servers server) async {
     if (_isLoading) return;
-    
+
     setState(() {
       _isLoading = true;
     });
 
     try {
       final status = await _serverController.pingServer(server.address);
-      
+
       if (mounted) {
         setState(() {
           _serverStatus = {
@@ -84,16 +87,24 @@ class _InfoPageState extends State<InfoPage> {
                 ? '${status.response!.players.online} / ${status.response!.players.max}'
                 : '0 / 0',
             'version': status?.response?.version.name ?? '未知版本',
-            'description': status?.response?.description.description ?? 'A Minecraft Server',
+            'description':
+                status?.response?.description.description ??
+                'A Minecraft Server',
             'latency': status?.ping?.toString() ?? '0',
             'maxPlayers': status?.response?.players.max?.toString() ?? '0',
-            'onlinePlayers': status?.response?.players.online?.toString() ?? '0',
-            'playerSample': status?.response?.players.sample?.map((player) => player.name).toList()?.cast<String>() ?? <String>[],
+            'onlinePlayers':
+                status?.response?.players.online?.toString() ?? '0',
+            'playerSample':
+                status?.response?.players.sample
+                    ?.map((player) => player.name)
+                    .toList()
+                    ?.cast<String>() ??
+                <String>[],
           };
           _lastRefreshTime = DateTime.now().toString().substring(0, 19);
           _isLoading = false;
         });
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('服务器信息刷新完成: ${server.name}'),
@@ -120,12 +131,9 @@ class _InfoPageState extends State<InfoPage> {
           };
           _isLoading = false;
         });
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('刷新失败: $e'),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text('刷新失败: $e'), backgroundColor: Colors.red),
         );
       }
     }
@@ -134,7 +142,7 @@ class _InfoPageState extends State<InfoPage> {
   /// 刷新信息页面
   Future<void> _refreshInfo() async {
     if (_isLoading) return;
-    
+
     setState(() {
       _isLoading = true;
     });
@@ -142,13 +150,13 @@ class _InfoPageState extends State<InfoPage> {
     try {
       // 模拟网络请求
       await Future.delayed(const Duration(seconds: 2));
-      
+
       if (mounted) {
         setState(() {
           _lastRefreshTime = DateTime.now().toString().substring(0, 19);
           _isLoading = false;
         });
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('信息页面刷新完成'),
@@ -162,12 +170,9 @@ class _InfoPageState extends State<InfoPage> {
         setState(() {
           _isLoading = false;
         });
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('刷新失败: $e'),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text('刷新失败: $e'), backgroundColor: Colors.red),
         );
       }
     }
@@ -185,17 +190,17 @@ class _InfoPageState extends State<InfoPage> {
             }
           });
         }
-        
+
         final selectedServer = provider.selectedServer;
-        
+
         return RefreshIndicator(
-          onRefresh: () => selectedServer != null 
-              ? _refreshServerInfo(selectedServer) 
+          onRefresh: () => selectedServer != null
+              ? _refreshServerInfo(selectedServer)
               : _refreshInfo(),
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.all(16),
-            child: selectedServer != null 
+            child: selectedServer != null
                 ? _buildServerDetails(selectedServer)
                 : _buildDefaultContent(),
           ),
@@ -212,13 +217,10 @@ class _InfoPageState extends State<InfoPage> {
         // 页面标题
         const Text(
           '服务器信息',
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 40),
-        
+
         // 提示信息卡片
         Card(
           child: Padding(
@@ -226,11 +228,7 @@ class _InfoPageState extends State<InfoPage> {
             child: Center(
               child: Column(
                 children: [
-                  Icon(
-                    Icons.dns_outlined,
-                    size: 64,
-                    color: Colors.grey[400],
-                  ),
+                  Icon(Icons.dns_outlined, size: 64, color: Colors.grey[400]),
                   const SizedBox(height: 16),
                   Text(
                     '请选择一个服务器',
@@ -243,10 +241,7 @@ class _InfoPageState extends State<InfoPage> {
                   const SizedBox(height: 8),
                   Text(
                     '在首页点击服务器卡片查看详细信息',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[500],
-                    ),
+                    style: TextStyle(fontSize: 14, color: Colors.grey[500]),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -273,11 +268,11 @@ class _InfoPageState extends State<InfoPage> {
                 Row(
                   children: [
                     Icon(
-                      _serverStatus?['online'] == true 
-                          ? Icons.check_circle 
+                      _serverStatus?['online'] == true
+                          ? Icons.check_circle
                           : Icons.error,
-                      color: _serverStatus?['online'] == true 
-                          ? Colors.green 
+                      color: _serverStatus?['online'] == true
+                          ? Colors.green
                           : Colors.red,
                     ),
                     const SizedBox(width: 8),
@@ -301,18 +296,21 @@ class _InfoPageState extends State<InfoPage> {
                 Text('最后刷新: $_lastRefreshTime'),
                 const SizedBox(height: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
-                    color: _serverStatus?['online'] == true 
-                        ? Colors.green.withOpacity(0.1) 
+                    color: _serverStatus?['online'] == true
+                        ? Colors.green.withOpacity(0.1)
                         : Colors.red.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Text(
                     _serverStatus?['online'] == true ? '在线' : '离线',
                     style: TextStyle(
-                      color: _serverStatus?['online'] == true 
-                          ? Colors.green 
+                      color: _serverStatus?['online'] == true
+                          ? Colors.green
                           : Colors.red,
                       fontWeight: FontWeight.w500,
                     ),
@@ -322,9 +320,9 @@ class _InfoPageState extends State<InfoPage> {
             ),
           ),
         ),
-        
+
         const SizedBox(height: 16),
-        
+
         // 服务器信息卡片
         Card(
           child: Padding(
@@ -355,9 +353,8 @@ class _InfoPageState extends State<InfoPage> {
             ),
           ),
         ),
-        
-        if (_serverStatus?['online'] == true) ...
-          _buildPlayerInfo(),
+
+        if (_serverStatus?['online'] == true) ..._buildPlayerInfo(),
       ],
     );
   }
@@ -374,10 +371,7 @@ class _InfoPageState extends State<InfoPage> {
           const SizedBox(width: 8),
           const Text(
             '服务器状态',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
         ],
       ),
@@ -392,7 +386,7 @@ class _InfoPageState extends State<InfoPage> {
   List<Widget> _buildPlayerInfo() {
     return [
       const SizedBox(height: 16),
-      
+
       // 玩家信息卡片
       Card(
         child: Padding(
@@ -406,10 +400,7 @@ class _InfoPageState extends State<InfoPage> {
                   const SizedBox(width: 8),
                   const Text(
                     '玩家信息',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                   ),
                 ],
               ),
@@ -418,7 +409,7 @@ class _InfoPageState extends State<InfoPage> {
                 children: [
                   Expanded(
                     child: _buildPlayerCountCard(
-                      '在线玩家', 
+                      '在线玩家',
                       _serverStatus!['onlinePlayers'] ?? '0',
                       Colors.green,
                     ),
@@ -426,7 +417,7 @@ class _InfoPageState extends State<InfoPage> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: _buildPlayerCountCard(
-                      '最大玩家数', 
+                      '最大玩家数',
                       _serverStatus!['maxPlayers'] ?? '0',
                       Colors.blue,
                     ),
@@ -434,7 +425,8 @@ class _InfoPageState extends State<InfoPage> {
                 ],
               ),
               // 添加玩家列表
-              if ((_serverStatus!['playerSample'] as List?)?.isNotEmpty == true) ..._buildPlayerList(),
+              if ((_serverStatus!['playerSample'] as List?)?.isNotEmpty == true)
+                ..._buildPlayerList(),
             ],
           ),
         ),
@@ -449,10 +441,7 @@ class _InfoPageState extends State<InfoPage> {
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: color.withOpacity(0.3),
-          width: 1,
-        ),
+        border: Border.all(color: color.withOpacity(0.3), width: 1),
       ),
       child: Column(
         children: [
@@ -467,10 +456,7 @@ class _InfoPageState extends State<InfoPage> {
           const SizedBox(height: 4),
           Text(
             title,
-            style: TextStyle(
-              fontSize: 12,
-              color: color.withOpacity(0.8),
-            ),
+            style: TextStyle(fontSize: 12, color: color.withOpacity(0.8)),
           ),
         ],
       ),
@@ -481,7 +467,7 @@ class _InfoPageState extends State<InfoPage> {
   List<Widget> _buildPlayerList() {
     final playerListRaw = _serverStatus!['playerSample'] as List?;
     final playerList = playerListRaw?.cast<String>() ?? <String>[];
-    
+
     return [
       const SizedBox(height: 16),
       const Divider(),
@@ -492,10 +478,7 @@ class _InfoPageState extends State<InfoPage> {
           const SizedBox(width: 8),
           const Text(
             '在线玩家列表',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
           const Spacer(),
           Container(
@@ -522,15 +505,14 @@ class _InfoPageState extends State<InfoPage> {
         decoration: BoxDecoration(
           color: Colors.grey.withOpacity(0.05),
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: Colors.grey.withOpacity(0.2),
-            width: 1,
-          ),
+          border: Border.all(color: Colors.grey.withOpacity(0.2), width: 1),
         ),
         child: Wrap(
           spacing: 8,
           runSpacing: 8,
-          children: playerList.map((playerName) => _buildPlayerChip(playerName)).toList(),
+          children: playerList
+              .map((playerName) => _buildPlayerChip(playerName))
+              .toList(),
         ),
       ),
     ];
@@ -543,19 +525,12 @@ class _InfoPageState extends State<InfoPage> {
       decoration: BoxDecoration(
         color: Colors.blue.withOpacity(0.1),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Colors.blue.withOpacity(0.3),
-          width: 1,
-        ),
+        border: Border.all(color: Colors.blue.withOpacity(0.3), width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(
-            Icons.person,
-            size: 16,
-            color: Colors.blue,
-          ),
+          const Icon(Icons.person, size: 16, color: Colors.blue),
           const SizedBox(width: 4),
           Text(
             playerName,
@@ -582,9 +557,7 @@ class _InfoPageState extends State<InfoPage> {
               style: const TextStyle(fontWeight: FontWeight.w500),
             ),
           ),
-          Expanded(
-            child: Text(value),
-          ),
+          Expanded(child: Text(value)),
         ],
       ),
     );

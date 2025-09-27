@@ -20,7 +20,7 @@ class _MuPageViewState extends State<MyPageView> {
   /// 触发页面刷新回调注册
   void _triggerPageRefreshRegistration(BuildContext context, int pageIndex) {
     print('触发页面 $pageIndex 的刷新回调注册'); // 调试信息
-    
+
     // 通知当前页面重新注册刷新回调
     switch (pageIndex) {
       case 0: // Home页面

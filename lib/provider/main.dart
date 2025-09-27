@@ -22,8 +22,11 @@ class PageViewProvider with ChangeNotifier {
   Servers? _selectedServer; // 当前选中的服务器
 
   int get selectedIndex => _selectedIndex;
+
   PageController get pageController => _pageController;
+
   bool get isMovingMode => _isMovingMode;
+
   Servers? get selectedServer => _selectedServer;
 
   void setSelectedIndex(int index) {
@@ -64,7 +67,7 @@ class PageViewProvider with ChangeNotifier {
         _resetCallbackFlags[pageIndex]!();
       }
     }
-    
+
     notifyListeners();
   }
 
