@@ -27,33 +27,26 @@ class _SettingsPageState extends State<SettingsPage>
   Widget build(BuildContext context) {
     super.build(context); // 保持页面活跃状态必需的调用
     
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('设置'),
-        backgroundColor: Colors.blueAccent,
-        foregroundColor: Colors.white,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.restore),
-            onPressed: _showResetDialog,
-            tooltip: '重置设置',
-          ),
-        ],
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          _buildServerSection(),
-          const SizedBox(height: 20),
-          _buildUISection(),
-          const SizedBox(height: 20),
-          _buildNetworkSection(),
-          const SizedBox(height: 20),
-          _buildNotificationSection(),
-          const SizedBox(height: 20),
-          _buildAdvancedSection(),
-        ],
-      ),
+    return Consumer<PageViewProvider>(
+      builder: (context, provider, child) {
+        // 更新设置控制器引用，确保使用最新的实例
+        _settingsController = provider.settingsController;
+        
+        return ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            _buildServerSection(),
+            const SizedBox(height: 20),
+            _buildUISection(),
+            const SizedBox(height: 20),
+            _buildNetworkSection(),
+            const SizedBox(height: 20),
+            _buildNotificationSection(),
+            const SizedBox(height: 20),
+            _buildAdvancedSection(),
+          ],
+        );
+      },
     );
   }
 
