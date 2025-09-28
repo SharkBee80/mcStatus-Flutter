@@ -491,32 +491,32 @@ class _SettingsPageState extends State<SettingsPage>
   }
 
   /// 显示重置设置对话框
-  void _showResetDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('重置设置'),
-        content: const Text('确定要重置所有设置为默认值吗？\n（当前选中的服务器会保留）'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('取消'),
-          ),
-          TextButton(
-            onPressed: () async {
-              await _settingsController.resetToDefaults(
-                keepSelectedServer: true,
-              );
-              setState(() {});
-              Navigator.pop(context);
-              showToast('设置已重置为默认值');
-            },
-            child: const Text('确定'),
-          ),
-        ],
-      ),
-    );
-  }
+  // void _showResetDialog() {
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) => AlertDialog(
+  //       title: const Text('重置设置'),
+  //       content: const Text('确定要重置所有设置为默认值吗？\n（当前选中的服务器会保留）'),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () => Navigator.pop(context),
+  //           child: const Text('取消'),
+  //         ),
+  //         TextButton(
+  //           onPressed: () async {
+  //             await _settingsController.resetToDefaults(
+  //               keepSelectedServer: true,
+  //             );
+  //             setState(() {});
+  //             Navigator.pop(context);
+  //             showToast('设置已重置为默认值');
+  //           },
+  //           child: const Text('确定'),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   /// 显示所有设置信息（调试用）
   void _showAllSettings() {
