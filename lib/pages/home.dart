@@ -5,6 +5,7 @@ import 'package:mcstatus/ui/card.dart';
 import 'package:mcstatus/core/server.dart';
 import 'package:mcstatus/ui/bottomSheet.dart';
 import 'package:mcstatus/ui/showcentraldialog.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 import 'package:mcstatus/provider/main.dart';
 
@@ -151,7 +152,7 @@ class _HomePageState extends State<HomePage>
   @override
   Widget build(BuildContext context) {
     super.build(context); // 保持页面活跃状态必需的调用
-    
+
     return Consumer<PageViewProvider>(
       builder: (context, provider, child) {
         final isMovingMode = provider.isMovingMode;
@@ -285,12 +286,8 @@ class _HomePageState extends State<HomePage>
     setState(() {
       _movingServer = null;
     });
-
     // 通知Provider退出移动模式
     context.read<PageViewProvider>().setMovingMode(false);
-
-    // 隐藏SnackBar
-    ScaffoldMessenger.of(context).hideCurrentSnackBar();
   }
 
   /// 处理移动到指定位置
@@ -345,19 +342,11 @@ class _HomePageState extends State<HomePage>
       _cancelMoveMode();
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('移动成功: "${movingServer.name}" 已移动到新位置'),
-            backgroundColor: Colors.green,
-            duration: const Duration(seconds: 2),
-          ),
-        );
+        showToast('移动成功: "${movingServer.name}" 已移动到新位置');
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('移动失败: $e'), backgroundColor: Colors.red),
-        );
+        showToast('移动失败: $e');
       }
     }
   }
@@ -376,18 +365,11 @@ class _HomePageState extends State<HomePage>
         setState(() {
           _serverStatuses.remove(server.uuid.toString());
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('已删除服务器: ${server.name}'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        showToast('已删除服务器: ${server.name}');
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('删除失败: $e'), backgroundColor: Colors.red),
-        );
+        showToast('删除失败: $e');
       }
     }
   }

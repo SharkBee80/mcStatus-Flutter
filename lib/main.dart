@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:mcstatus/provider/main.dart';
+import 'package:oktoast/oktoast.dart';
 
 // provider
 import 'package:provider/provider.dart';
@@ -18,11 +19,11 @@ import 'package:mcstatus/models/settings.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   try {
     DebugX.console('Initializing Hive...');
     await Hive.initFlutter(await FileUtils.getStringPath("hive"));
-    
+
     DebugX.console('Registering Servers adapter...');
     Hive.registerAdapter(ServersAdapter());
     await Hive.openBox<Servers>('servers');
@@ -60,30 +61,33 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (context) => Counter()),
-        ChangeNotifierProvider(
-          create: (context) {
-            final provider = PageViewProvider();
-            // 在下一个frame初始化，确保Hive已经准备好
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              provider.init().catchError((e) {
-                DebugX.console('PageViewProvider init error: $e');
+    return OKToast(
+      position: ToastPosition(align: Alignment.topCenter),
+      child: MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (context) => Counter()),
+          ChangeNotifierProvider(
+            create: (context) {
+              final provider = PageViewProvider();
+              // 在下一个frame初始化，确保Hive已经准备好
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                provider.init().catchError((e) {
+                  DebugX.console('PageViewProvider init error: $e');
+                });
               });
-            });
-            return provider;
-          },
+              return provider;
+            },
+          ),
+        ],
+        child: MaterialApp(
+          title: 'MCStatus',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          ),
+          home: const GatePage(),
+          scrollBehavior: MyCustomScrollBehavior(),
         ),
-      ],
-      child: MaterialApp(
-        title: 'MCStatus',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        ),
-        home: const GatePage(),
-        scrollBehavior: MyCustomScrollBehavior(),
       ),
     );
   }
@@ -92,9 +96,9 @@ class MyApp extends StatelessWidget {
 /// 错误处理应用
 class ErrorApp extends StatelessWidget {
   final String error;
-  
+
   const ErrorApp({super.key, required this.error});
-  
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 import 'package:mcstatus/provider/main.dart';
 import 'package:mcstatus/models/servers.dart';
@@ -136,9 +137,7 @@ class _InfoPageState extends State<InfoPage>
           _isLoading = false;
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('刷新失败: $e'), backgroundColor: Colors.red),
-        );
+        showToast('刷新失败: $e');
       }
     }
   }
@@ -167,9 +166,7 @@ class _InfoPageState extends State<InfoPage>
           _isLoading = false;
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('刷新失败: $e'), backgroundColor: Colors.red),
-        );
+        showToast('刷新失败: $e');
       }
     }
   }

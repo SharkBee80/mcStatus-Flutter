@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mcstatus/ui/bottomnavigationbar.dart';
 import 'package:mcstatus/ui/pageview.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 
 import 'package:mcstatus/provider/main.dart';
@@ -53,9 +54,7 @@ class _MyHubPageState extends State<MyHubPage> {
               // 通知Provider状态变化
               provider.notifyListeners();
               Navigator.pop(context);
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(const SnackBar(content: Text('设置已重置为默认值')));
+              showToast('设置已重置为默认值');
             },
             child: const Text('确定'),
           ),
@@ -63,10 +62,12 @@ class _MyHubPageState extends State<MyHubPage> {
       ),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     Color bottomNavigationBarColor = Colors.grey.shade200;
     return Scaffold(
+      /// 标题
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text("Minecraft Servers Status"),
@@ -102,18 +103,8 @@ class _MyHubPageState extends State<MyHubPage> {
           ),
         ],
       ),
-      // body: Center(
-      //   child: Column(
-      //     mainAxisAlignment: MainAxisAlignment.start,
-      //     children: <Widget>[
-      //       const Text('You have pushed the button this many times:'),
-      //       Text(
-      //         '$_counter',
-      //         style: Theme.of(context).textTheme.headlineMedium,
-      //       ),
-      //     ],
-      //   ),
-      // ),
+
+      /// 主体
       body: MyPageView(
         selectedIndex: context.watch<PageViewProvider>().selectedIndex,
       ),
@@ -142,6 +133,8 @@ class _MyHubPageState extends State<MyHubPage> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+
+      /// 底部导航栏
       bottomNavigationBar: XBottomNavigationBar(
         color: bottomNavigationBarColor,
       ),

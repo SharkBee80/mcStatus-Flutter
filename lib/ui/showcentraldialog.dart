@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:mcstatus/core/server.dart';
 import 'package:mcstatus/models/servers.dart';
+import 'package:oktoast/oktoast.dart';
 
 /// Shows a blurred dialog with optional custom background and blur settings.
 Future<T?> showBlurredDialog<T>({
@@ -119,38 +120,18 @@ void showCentralDialog(BuildContext context, {Servers? server}) {
                           );
                           if (success) {
                             Navigator.pop(context); // 关闭弹窗
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text("更新成功: $name / $address"),
-                                backgroundColor: Colors.green,
-                              ),
-                            );
+                            showToast("更新成功: $name / $address");
                           } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("更新失败: 服务器不存在"),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
+                            showToast("更新失败: 服务器不存在");
                           }
                         } else {
                           // 添加新服务器
                           await Server().save(name, address);
                           Navigator.pop(context); // 关闭弹窗
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text("添加成功: $name / $address"),
-                              backgroundColor: Colors.green,
-                            ),
-                          );
+                          showToast("添加成功: $name / $address");
                         }
                       } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(isEditing ? "更新失败: $e" : "添加失败: $e"),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
+                        showToast(isEditing ? "更新失败: $e" : "添加失败: $e");
                       }
                     },
                     child: Text(isEditing ? "更新" : "添加"),
@@ -170,9 +151,7 @@ _check(context, name, address) {
     name = "Minncraft Server";
   }
   if (address == null || address.isEmpty) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text("请填写服务器地址")));
+    showToast("请填写服务器地址");
     return false;
   }
   return true;

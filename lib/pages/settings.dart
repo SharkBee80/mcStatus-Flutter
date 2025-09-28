@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:oktoast/oktoast.dart';
 import 'package:provider/provider.dart';
 import 'package:mcstatus/provider/main.dart';
 import 'package:mcstatus/hive/settings.dart';
@@ -26,12 +27,12 @@ class _SettingsPageState extends State<SettingsPage>
   @override
   Widget build(BuildContext context) {
     super.build(context); // 保持页面活跃状态必需的调用
-    
+
     return Consumer<PageViewProvider>(
       builder: (context, provider, child) {
         // 更新设置控制器引用，确保使用最新的实例
         _settingsController = provider.settingsController;
-        
+
         return ListView(
           padding: const EdgeInsets.all(16),
           children: [
@@ -364,9 +365,7 @@ class _SettingsPageState extends State<SettingsPage>
                 setState(() {});
                 Navigator.pop(context);
               } else {
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(const SnackBar(content: Text('请输入5-300之间的数字')));
+                showToast('请输入5-300之间的数字');
               }
             },
             child: const Text('确定'),
@@ -408,9 +407,7 @@ class _SettingsPageState extends State<SettingsPage>
                 setState(() {});
                 Navigator.pop(context);
               } else {
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(const SnackBar(content: Text('请输入1-30之间的数字')));
+                showToast('请输入1-30之间的数字');
               }
             },
             child: const Text('确定'),
@@ -512,9 +509,7 @@ class _SettingsPageState extends State<SettingsPage>
               );
               setState(() {});
               Navigator.pop(context);
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(const SnackBar(content: Text('设置已重置为默认值')));
+              showToast('设置已重置为默认值');
             },
             child: const Text('确定'),
           ),
