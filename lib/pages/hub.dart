@@ -45,14 +45,10 @@ class _MyHubPageState extends State<MyHubPage> {
             child: const Text('取消'),
           ),
           TextButton(
-            onPressed: () async {
-              await provider.settingsController.resetToDefaults(
-                keepSelectedServer: true,
-              );
-              // 刷新设置控制器的缓存
-              provider.settingsController.refreshCache();
-              // 通知Provider状态变化
-              provider.notifyListeners();
+            onPressed: () {
+              // 重置设置
+              provider.resetSettings();
+
               Navigator.pop(context);
               showToast('设置已重置为默认值');
             },
@@ -74,30 +70,29 @@ class _MyHubPageState extends State<MyHubPage> {
         actions: [
           Consumer<PageViewProvider>(
             builder: (context, provider, child) {
-              if (provider.isMovingMode) {
-                // 移动模式：显示取消按钮
+              // 正常模式：根据页面显示相应的按钮
+              if (provider.selectedIndex == 3) {
+                // 设置页面：只显示重置按钮
                 return IconButton(
-                  onPressed: () => provider.cancelMove(),
-                  icon: const Icon(Icons.close),
-                  tooltip: '取消移动',
+                  onPressed: () => _showResetDialog(context, provider),
+                  icon: const Icon(Icons.restore),
+                  tooltip: _getRefreshTooltip(provider.selectedIndex),
                 );
               } else {
-                // 正常模式：根据页面显示相应的按钮
-                if (provider.selectedIndex == 3) {
-                  // 设置页面：只显示重置按钮
+                if (provider.isMovingMode && provider.selectedIndex == 0) {
+                  // 移动模式：显示取消按钮
                   return IconButton(
-                    onPressed: () => _showResetDialog(context, provider),
-                    icon: const Icon(Icons.restore),
-                    tooltip: _getRefreshTooltip(provider.selectedIndex),
-                  );
-                } else {
-                  // 其他页面：显示刷新按钮
-                  return IconButton(
-                    onPressed: () => provider.refresh(),
-                    icon: const Icon(Icons.refresh),
-                    tooltip: _getRefreshTooltip(provider.selectedIndex),
+                    onPressed: () => provider.cancelMove(),
+                    icon: const Icon(Icons.close),
+                    tooltip: '取消移动',
                   );
                 }
+                // 其他页面：显示刷新按钮
+                return IconButton(
+                  onPressed: () => provider.refresh(),
+                  icon: const Icon(Icons.refresh),
+                  tooltip: _getRefreshTooltip(provider.selectedIndex),
+                );
               }
             },
           ),

@@ -128,4 +128,11 @@ class PageViewProvider with ChangeNotifier {
       _refreshCallbacks[_selectedIndex]!();
     }
   }
+
+  /// 重置设置
+  void resetSettings() {
+    _settingsController.resetToDefaults();
+    _settingsController.refreshCache();
+    notifyListeners();
+  }
 }
