@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:mcstatus/pages/gate.dart';
 import 'package:mcstatus/utils/files_utils.dart';
 import 'package:mcstatus/utils/debug.dart';
+import 'package:mcstatus/utils/error_handler.dart';
 
 // hive
 import 'package:hive_flutter/hive_flutter.dart';
@@ -19,6 +20,9 @@ import 'package:mcstatus/models/settings.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // 设置全局错误处理
+  GlobalErrorHandler.setup();
 
   try {
     DebugX.console('Initializing Hive...');
@@ -48,8 +52,9 @@ void main() async {
 
     DebugX.console('Starting app...');
     runApp(MyApp());
-  } catch (e) {
+  } catch (e, stackTrace) {
     DebugX.console('Critical error during app initialization: $e');
+    DebugX.console('Stack trace: $stackTrace');
     // 如果初始化完全失败，仍然尝试启动基础应用
     runApp(ErrorApp(error: e.toString()));
   }
