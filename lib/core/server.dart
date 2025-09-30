@@ -117,33 +117,33 @@ class Server {
   Future<dynamic> pingServer(String address) async {
     try {
       DebugX.console('Ping服务器: $address');
-      
+
       final fullAddress = _getFullAddress(address);
       final split = fullAddress.split(':');
-      
+
       if (split.length != 2) {
         DebugX.console('无效的地址格式: $fullAddress');
         return null;
       }
-      
+
       final host = split[0];
       final portStr = split[1];
-      
+
       // 验证端口号
       final port = int.tryParse(portStr);
       if (port == null || port < 1 || port > 65535) {
         DebugX.console('无效的端口号: $portStr');
         return null;
       }
-      
+
       // 验证主机名
       if (host.isEmpty) {
         DebugX.console('空的主机名');
         return null;
       }
-      
+
       DebugX.console('尝试连接 $host:$port');
-      
+
       // 添加超时和异常处理
       final response = await ping(host, port: port).timeout(
         const Duration(seconds: 8),
@@ -152,13 +152,13 @@ class Server {
           return null;
         },
       );
-      
+
       if (response != null) {
         DebugX.console('Ping $address 成功');
       } else {
         DebugX.console('Ping $address 失败: 无响应');
       }
-      
+
       return response;
     } catch (e, stackTrace) {
       DebugX.console('Ping $address 异常: $e');
@@ -170,31 +170,31 @@ class Server {
   Future<dynamic> getServerInfo(String address) async {
     try {
       DebugX.console('获取服务器信息: $address');
-      
+
       final fullAddress = _getFullAddress(address);
       final split = fullAddress.split(':');
-      
+
       if (split.length != 2) {
         DebugX.console('无效的地址格式: $fullAddress');
         throw ArgumentError('无效的地址格式: $fullAddress');
       }
-      
+
       final host = split[0];
       final portStr = split[1];
-      
+
       final port = int.tryParse(portStr);
       if (port == null || port < 1 || port > 65535) {
         DebugX.console('无效的端口号: $portStr');
         throw ArgumentError('无效的端口号: $portStr');
       }
-      
+
       if (host.isEmpty) {
         DebugX.console('空的主机名');
         throw ArgumentError('空的主机名');
       }
-      
+
       DebugX.console('尝试获取服务器信息 $host:$port');
-      
+
       final response = await ping(host, port: port).timeout(
         const Duration(seconds: 10),
         onTimeout: () {
@@ -202,7 +202,7 @@ class Server {
           throw TimeoutException('连接超时', const Duration(seconds: 10));
         },
       );
-      
+
       DebugX.console('获取服务器信息 $address 成功');
       return response;
     } catch (e, stackTrace) {

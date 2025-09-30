@@ -100,9 +100,9 @@ class _InfoPageState extends State<InfoPage>
                 ? '${status.response!.players.online} / ${status.response!.players.max}'
                 : '0 / 0',
             'version': status?.response?.version.name ?? '未知版本',
-            'description':
-                status?.response?.description.description ??
-                'A Minecraft Server',
+            'description': status?.response?.description.description != ''
+                ? status?.response?.description.description
+                : 'A Minecraft Server',
             'latency': status?.ping?.toString() ?? '0',
             'maxPlayers': status?.response?.players.max?.toString() ?? '0',
             'onlinePlayers':
@@ -174,7 +174,7 @@ class _InfoPageState extends State<InfoPage>
   @override
   Widget build(BuildContext context) {
     super.build(context); // 保持页面活跃状态必需的调用
-    
+
     return Consumer<PageViewProvider>(
       builder: (context, provider, child) {
         // 当页面切换到Info页且还未注册回调时，重新注册
@@ -276,6 +276,41 @@ class _InfoPageState extends State<InfoPage>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // 服务器信息卡片
+        Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    const Icon(Icons.info, color: Colors.blue),
+                    const SizedBox(width: 8),
+                    const Text(
+                      '服务器信息',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                _buildInfoRow('服务器名称', server.name),
+                _buildInfoRow('服务器地址', server.address),
+                // _buildInfoRow('完整地址', server.fulladdress),
+                _buildInfoRow('添加时间', server.addtime),
+                if (_serverStatus != null) ..._buildServerStatus(),
+              ],
+            ),
+          ),
+        ),
+
+        if (_serverStatus?['online'] == true) ..._buildPlayerInfo(),
+
+        const SizedBox(height: 16),
+
         // 连接状态卡片
         Card(
           child: Padding(
@@ -338,41 +373,6 @@ class _InfoPageState extends State<InfoPage>
             ),
           ),
         ),
-
-        const SizedBox(height: 16),
-
-        // 服务器信息卡片
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    const Icon(Icons.info, color: Colors.blue),
-                    const SizedBox(width: 8),
-                    const Text(
-                      '服务器信息',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                _buildInfoRow('服务器名称', server.name),
-                _buildInfoRow('服务器地址', server.address),
-                _buildInfoRow('完整地址', server.fulladdress),
-                _buildInfoRow('添加时间', server.addtime),
-                if (_serverStatus != null) ..._buildServerStatus(),
-              ],
-            ),
-          ),
-        ),
-
-        if (_serverStatus?['online'] == true) ..._buildPlayerInfo(),
       ],
     );
   }
