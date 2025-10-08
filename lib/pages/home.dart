@@ -97,6 +97,13 @@ class _HomePageState extends State<HomePage>
     _serverStatuses.removeWhere(
       (key, value) => !currentServerKeys.contains(key),
     );
+    
+    // 如果服务器列表为空，确保UI状态正确更新
+    if (newServers.isEmpty && mounted) {
+      setState(() {
+        // 清空所有状态
+      });
+    }
   }
 
   Future<void> _loadServerStatuses() async {
@@ -181,9 +188,7 @@ class _HomePageState extends State<HomePage>
               ? '${status.response!.players.online} / ${status.response!.players.max}'
               : '0 / 0',
           'signal': status?.response != null ? '4' : '0',
-          'description': status?.response?.description.description != ''
-              ? status?.response?.description.description
-              : 'A Minecraft Server',
+          'description': _getDescriptionFromStatus(status),
         };
       });
       
@@ -197,13 +202,31 @@ class _HomePageState extends State<HomePage>
             'online': false,
             'players': '0 / 0',
             'signal': '0',
-            'description': '连接失败',
+            'description': '连接失败: ${e.toString().contains("timeout") ? "连接超时" : "无法连接"}',
           };
         });
       }
       
       return false;
     }
+  }
+
+  /// 从状态中提取描述信息
+  String _getDescriptionFromStatus(dynamic status) {
+    if (status == null) {
+      return '服务器离线或不存在';
+    }
+    
+    if (status.response == null) {
+      return '无法获取服务器信息';
+    }
+    
+    final description = status.response?.description.description;
+    if (description != null && description.isNotEmpty && description != 'A Minecraft Server') {
+      return description;
+    }
+    
+    return 'A Minecraft Server';
   }
 
   Future<void> _fetchSingleServerStatus(Servers server) async {
@@ -231,9 +254,7 @@ class _HomePageState extends State<HomePage>
               ? '${status.response!.players.online} / ${status.response!.players.max}'
               : '0 / 0',
           'signal': status?.response != null ? '4' : '0', // 4表示满信号，0表示无信号
-          'description': status?.response?.description.description != ''
-              ? status?.response?.description.description
-              : 'A Minecraft Server',
+          'description': _getDescriptionFromStatus(status),
         };
       });
     } catch (e) {
@@ -246,7 +267,7 @@ class _HomePageState extends State<HomePage>
           'online': false,
           'players': '0 / 0',
           'signal': '0',
-          'description': '连接失败',
+          'description': '连接失败: ${e.toString().contains("timeout") ? "连接超时" : "无法连接"}',
         };
       });
     }
@@ -307,8 +328,44 @@ class _HomePageState extends State<HomePage>
                           }
                         });
 
+                        // 修复：即使服务器列表为空也显示友好的提示信息
                         if (servers.isEmpty) {
-                          return const Center(child: Text("暂无服务器"));
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Icon(
+                                  Icons.cloud_off,
+                                  size: 64,
+                                  color: Colors.grey,
+                                ),
+                                const SizedBox(height: 16),
+                                const Text(
+                                  "暂无服务器",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                const Text(
+                                  "点击右上角添加按钮添加服务器",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                                const SizedBox(height: 24),
+                                ElevatedButton.icon(
+                                  onPressed: () {
+                                    showCentralDialog(context);
+                                  },
+                                  icon: const Icon(Icons.add),
+                                  label: const Text("添加服务器"),
+                                ),
+                              ],
+                            ),
+                          );
                         }
 
                         return RefreshIndicator(

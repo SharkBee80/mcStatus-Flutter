@@ -103,11 +103,12 @@ void showCentralDialog(BuildContext context, {Servers? server}) {
                       ),
                     ),
                     onPressed: () async {
-                      final name = nameController.text;
+                      String name = nameController.text;
                       final address = addressController.text;
-                      if (!_check(context, name, address)) {
+                      if (!_checkAddress(address)) {
                         return;
                       }
+                      name = name.isEmpty ? _getName(address) : name;
 
                       try {
                         if (isEditing) {
@@ -145,13 +146,15 @@ void showCentralDialog(BuildContext context, {Servers? server}) {
   );
 }
 
-_check(context, name, address) {
-  if (name == null || name.isEmpty) {
-    name = "Minncraft Server";
-  }
+_checkAddress(address) {
   if (address == null || address.isEmpty) {
     showToast("请填写服务器地址");
     return false;
   }
   return true;
+}
+
+String _getName(String address) {
+  final split = address.split(':');
+  return split[0].toUpperCase();
 }
