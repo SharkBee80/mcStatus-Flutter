@@ -1,3 +1,6 @@
+>> pre-release
+> 预览版
+
 # Minecraft Server Status
 
 一个跨平台的Minecraft服务器状态监控应用，支持实时查询服务器在线状态、玩家数量、版本信息等。
@@ -31,13 +34,15 @@
 - Flutter 3.0+
 - Dart 2.17+
 - Android API 21+ / iOS 12+ / Windows 10+ / macOS 10.15+ / Linux
+> ⚠ 理论支持IOS，无mac无法测试。
+
 
 ### 安装步骤
 
 1. 克隆项目:
 ```bash
-git clone <repository-url>
-cd Minecraft_Server_Status
+git clone https://github.com/SharkBee80/mcStatus-Flutter.git
+cd mcStatus-Flutter
 ```
 
 2. 安装依赖:
@@ -118,14 +123,16 @@ lib/
 应用采用激活码验证机制，首次使用需要输入激活码才能正常使用所有功能。
 - **`6666`**
 
-## 🤝 贡献
+[//]: # (## 🤝 贡献)
 
-欢迎提交Issue和Pull Request来改进这个项目。
+[//]: # ()
+[//]: # (欢迎提交Issue和Pull Request来改进这个项目。)
 
 ## 📄 许可证
 
 本项目仅供个人学习和研究使用，请勿用于商业用途。
 
-## 📞 联系方式
+[//]: # (## 📞 联系方式)
 
-如有问题，请联系项目维护者。
+[//]: # ()
+[//]: # (如有问题，请联系项目维护者。)
